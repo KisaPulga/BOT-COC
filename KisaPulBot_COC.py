@@ -8,12 +8,12 @@
 ###############################
 ###############################
 
-from controller import Controller
-from view import View
-from bot import Bot
-from features import farm_mdo_all_pc
+from bot_coc.controller import Controller
+from bot_coc.view import View
+from bot_coc.bot import Bot
+from bot_coc.features import FarmMDO
 
-farmMDO = farm_mdo_all_pc.FarmMDO()
+farmMDO = FarmMDO.FarmMDO()
 
 view = View()
 bot = Bot(farmMDO)
