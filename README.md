@@ -44,3 +44,6 @@ Pour utiliser le bot vous pouvez simplement :
 - Cloner le repo
 - Installer les dépendances de __"requirements.txt"__
 - Lancer le script __"KisaPulBot_COC.py"__
+
+# EXPLICATIONS DU CODE :
+https://www.notion.so/BOT-COC-302cda63760b80b0b3bac03b1b11ce92?v=2e6cda63760b8031addc000c9a6263a6&source=copy_link
