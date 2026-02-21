@@ -10,96 +10,166 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 
 class FarmMDO():
     def __init__(self):
-        pass
+        # Image Charette elixir
+        self.image_charette = os.path.join(os.path.dirname(__file__), 'images/charette_elixir.png')
+
+        # Longueurs initiales
+        self.x_width_init = 865
+        self.y_height_init = 484
+
+        # Valeurs de l'utilisateurs
+        self.x_width_user = None
+        self.y_height_user = None
+        self.x_left_user = None
+        self.y_left_user = None
+
+        # Coordonnées boutons
+        self.buttons = {}
+        self.x_troups = []
+        self.y_troups = None
+        self.spawn_positions = []
+
+        self.x_scroll_start = None
+        self.y_scroll_start = None
+
+        self.heros = False # a modifier si on a un héro
     
-    def RunFarmMDO(self):
+    @property
+    def x_ratio(self):
+        return self.x_width_user / self.x_width_init
+
+
+    def DefineUserCoordinates(self):
         print("Mettez la souris en haut a gauche de la fenetre")
         time.sleep(3)
-        x_gauche_user, y_gauche_user = pyautogui.position()
+        self.x_left_user, self.y_left_user = pyautogui.position()
         print("Mettez la souris en bas a droite de la fenetre")
         time.sleep(3)
         x_droite_user, y_droite_user = pyautogui.position()
 
-        x_longueur_user = x_droite_user - x_gauche_user
-        y_longueur_user = y_droite_user - y_gauche_user
+        self.x_width_user = x_droite_user - self.x_left_user
+        self.y_height_user = y_droite_user - self.y_left_user
+    
 
+    def ScaleXY(self, x_base, y_base):
+        x_ratio_btn = x_base / self.x_width_init
+        y_ratio_btn = y_base / self.y_height_init
 
-        # Fenetre initiale
-        x_gauche_init = 0
-        y_gauche_init = 38
-        x_droite_init = 865
-        y_droite_init = 522
+        new_x = self.x_left_user + x_ratio_btn * self.x_width_user
+        new_y = self.y_left_user + y_ratio_btn * self.y_height_user
 
-        x_longueur_init = x_droite_init - x_gauche_init
-        y_longueur_init = y_droite_init - y_gauche_init
+        return new_x,new_y
 
-        x_ratio = x_longueur_user / x_longueur_init
-
-
-        def Calcul_X_Y(x_base, y_base):
-            x_ratio = (x_base - x_gauche_init) / x_longueur_init
-            y_ratio = (y_base - y_gauche_init) / y_longueur_init
-
-            new_x = x_gauche_user + x_ratio * x_longueur_user
-            new_y = y_gauche_user + y_ratio * y_longueur_user
-
-            return new_x,new_y
-
-
-        #############
-        # VARIABLES #
-        #############
-
+    def SetupPositions(self):
         # Boutons
-        btn_attaquer = Calcul_X_Y(50, 475)
-        btn_trouver = Calcul_X_Y(642, 360)
-        btn_capituler = Calcul_X_Y(52, 401)
-        btn_capituler_ok = Calcul_X_Y(511, 338)
-        btn_rentrer = Calcul_X_Y(432, 447)
-        btn_recuperer_charette = Calcul_X_Y(638, 445)
-        btn_quitter_charette = Calcul_X_Y(725, 87)
+        self.buttons = {
+            "attack" : self.ScaleXY(50, 437),
+            "find" : self.ScaleXY(642, 322),
+            "surrender" : self.ScaleXY(52, 463),
+            "surrender_okay" : self.ScaleXY(511, 300),
+            "return_home" : self.ScaleXY(432, 447),
+            "elixir_cart_take" : self.ScaleXY(638, 407),
+            "elixir_cart_leave" : self.ScaleXY(725, 49),
+            "scroll_start" : self.ScaleXY(700,262), 
+            "scroll_end" : self.ScaleXY(700,462)
+        }
+    
+        x_troups_init = [147, 213, 268, 326, 382, 439, 495]
+        self.y_troups = self.ScaleXY(0,444)[1]
+        self.x_troups = [self.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
-        # Troupes
-        x_trp_init = [147, 213, 268, 326, 382, 439, 495]
-        y_trp = Calcul_X_Y(0,482)[1]
-        x_trp_user = [Calcul_X_Y(x, y_trp)[0] for x in x_trp_init]
-
-        trp_spawn_init = [
-            (728,123),(778,360),(817,203),(737,383),
-            (834,238),(796,314),(666,406),(83,326),
-            (140,140),(43,289),(30,226),(175,395),
-            (253,57),(595,423)
+        troups_spawn_init = [
+            (728,85),(778,322),(817,165),(737,345),
+            (834,200),(796,276),(666,368),(83,288),
+            (140,102),(43,251),(30,188),(175,357),
+            (253,19),(595,385)
         ]
-        heros = False # a modifier si on a un héro
+        self.spawn_positions = [
+            self.ScaleXY(x, y) for x, y in troups_spawn_init 
+        ]
 
-        x_trp_spawn_user = []
-        y_trp_spawn_user = []
+    @staticmethod
+    def RandomClickTime():
+        return random.uniform(0.4, 0.6)
+    
+    @staticmethod
+    def RandomWaitTime():
+        return random.uniform(0.9, 1.3)
 
-        for x,y in trp_spawn_init:
-            trp_x_user, trp_y_user = Calcul_X_Y(x,y)
-            x_trp_spawn_user.append(trp_x_user)
-            y_trp_spawn_user.append(trp_y_user)
+    def Click(self, position):
+        pyautogui.moveTo(position[0], position[1],  self.RandomClickTime(), pyautogui.easeInOutQuad)
+        pyautogui.click()
 
-        # Charette elixir
-        image_charette = os.path.join(os.path.dirname(__file__), 'images/charette_elixir.png')
+    def Attack(self):
+        # Attaquer puis trouver un adversaire
+        self.Click(self.buttons["attack"])
+        self.Click(self.buttons["find"])
 
-        #############
-        # FONCTIONS #
-        #############
+        # On attend de trouver un adversaire
+        time.sleep(random.uniform(9, 12))
 
-        def RandomTrpClic(liste):
-            copie = liste.copy()
-            random.shuffle(copie)
-            return copie
+        # Vérifie s'il y a au moins un héros, demandé au user au début
+        base_troups = self.x_troups if self.heros else self.x_troups[:-1]
+        put_troups = base_troups.copy() # créer une copie permet de pas modifier la liste de base
+        random.shuffle(put_troups)
 
-        def RandomTrpSpawn():
-            return random.randint(0,13)
+        # On boucle sur le nombre de troupe pour les placer
+        for troup_x in put_troups:
+            spawn = random.choice(self.spawn_positions)
+            self.Click((troup_x,self.y_troups))
+            self.Click(spawn)
 
-        def RandomTimeClic():
-            return random.uniform(0.4, 0.6)
+        #Active les capacités des troupes
+        ability_troups = self.x_troups if self.heros else self.x_troups[:-1]
+        for troup_x in ability_troups:
+            self.Click((troup_x, self.y_troups))
 
-        def RandomTimeWait():
-            return random.uniform(0.9, 1.3)
+        # Patiente un peu
+        time.sleep(random.uniform(2, 4))
+
+        # Abandonne l'attaque et rentre
+        self.Click(self.buttons["surrender"])
+        self.Click(self.buttons["surrender_okay"])
+        self.Click(self.buttons["return_home"])
+
+    def Scroll(self):
+        # Scroll pour aller vers la charette à Elixir
+        pyautogui.moveTo(self.buttons["scroll_start"][0],self.buttons["scroll_start"][1], self.RandomClickTime(), pyautogui.easeInOutQuad)
+        time.sleep(0.2)
+        pyautogui.mouseDown(button='left')
+        time.sleep(0.2)
+        pyautogui.moveTo(self.buttons["scroll_end"][0],self.buttons["scroll_end"][1], self.RandomClickTime(), pyautogui.easeInOutQuad)
+        pyautogui.mouseUp(button='left')
+    
+    def FindElixir(self):
+        # redimensionne l'image en fonction des x / y du user
+        image = Image.open(self.image_charette)
+        nouvelle_largeur = int(image.width * self.x_ratio)
+        nouvelle_hauteur = int(image.height * self.x_ratio)
+        image_resized = image.resize((nouvelle_largeur, nouvelle_hauteur))
+            
+        charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.6)
+        self.Click((charette_x, charette_y))
+
+        try:
+            self.FindElixir()
+
+            time.sleep(1)
+                
+            # Recupere l'elixir 
+            self.Click(self.buttons["elixir_cart_take"])
+            self.Click(self.buttons["elixir_cart_leave"])
+
+            print("Elixir récupéré !")
+
+        except pyautogui.ImageNotFoundException:
+            print("Charette à élixir pas trouvé, peut être au prochain tour !")
+
+
+    def RunFarmMDO(self):
+
+        self.DefineUserCoordinates()
+        self.SetupPositions()
 
 
         time.sleep(2)
@@ -111,42 +181,8 @@ class FarmMDO():
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")
-                # Attaquer puis trouver un adversaire
-                pyautogui.moveTo(btn_attaquer[0], btn_attaquer[1], RandomTimeWait(), pyautogui.easeInOutQuad)
-                pyautogui.click(btn_attaquer[0], btn_attaquer[1])
-                pyautogui.moveTo(btn_trouver[0], btn_trouver[1], RandomTimeWait(), pyautogui.easeInOutQuad)
-                pyautogui.click(btn_trouver[0], btn_trouver[1])
 
-                # On attend de trouver un adversaire
-                time.sleep(random.uniform(9, 12))
-
-                # Vérifie s'il y a au moins un héros, demandé au user au début
-                liste_trp = x_trp_user if heros else x_trp_user[:-1]
-                x_trp_shuffle = RandomTrpClic(liste_trp)
-
-                # On boucle sur le nombre de troupe pour les placer
-                for j in range(len(x_trp_shuffle)):
-                    spawn = RandomTrpSpawn()
-                    pyautogui.moveTo(x_trp_shuffle[j], y_trp, RandomTimeClic(), pyautogui.easeInOutQuad)
-                    pyautogui.click(x_trp_shuffle[j], y_trp)
-                    pyautogui.moveTo(x_trp_spawn_user[spawn], y_trp_spawn_user[spawn] , RandomTimeClic(), pyautogui.easeInOutQuad)
-                    pyautogui.click(x_trp_spawn_user[spawn], y_trp_spawn_user[spawn])
-
-                # Active les capacités des troupes
-                for j in range(len(liste_trp)):
-                    pyautogui.moveTo(liste_trp[j], y_trp, RandomTimeClic(), pyautogui.easeInOutQuad)
-                    pyautogui.click(liste_trp[j], y_trp)
-
-                # Patiente un peu
-                time.sleep(random.uniform(2, 4))
-
-                # Abandonne l'attaque et rentre
-                pyautogui.moveTo(btn_capituler[0], btn_capituler[1], RandomTimeClic(), pyautogui.easeInOutQuad)
-                pyautogui.click(btn_capituler[0], btn_capituler[1])
-                pyautogui.moveTo(btn_capituler_ok[0], btn_capituler_ok[1], RandomTimeClic(), pyautogui.easeInOutQuad)
-                pyautogui.click(btn_capituler_ok[0], btn_capituler_ok[1])
-                pyautogui.moveTo(btn_rentrer[0], btn_rentrer[1], RandomTimeClic(), pyautogui.easeInOutQuad)
-                pyautogui.click(btn_rentrer[0], btn_rentrer[1])
+                self.Attack()
 
                 # Patiente un peu
                 time.sleep(random.uniform(4, 6))
@@ -159,40 +195,5 @@ class FarmMDO():
                 time.sleep(1)
             print("--------------------------------")
 
-            # Scroll pour aller vers la charette à Elixir
-            x_scroll_depart, y_scroll_depart = Calcul_X_Y(700,300)
-            pyautogui.moveTo(x_scroll_depart,y_scroll_depart,RandomTimeClic(), pyautogui.easeInOutQuad)
-            time.sleep(0.2)
-            pyautogui.mouseDown(button='left')
-            time.sleep(0.2)
-            x_scroll_fin, y_scroll_fin = Calcul_X_Y(700,500)
-            pyautogui.moveTo(x_scroll_fin,y_scroll_fin,RandomTimeClic(), pyautogui.easeInOutQuad)
-            pyautogui.mouseUp(button='left')
-
-            
-            try:
-                # redimensionne l'image en fonction des x / y du user
-                image = Image.open(image_charette)
-                nouvelle_largeur = int(image.width * x_ratio)
-                nouvelle_hauteur = int(image.height * x_ratio)
-                image_resized = image.resize((nouvelle_largeur, nouvelle_hauteur))
-            
-                charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.6)
-                pyautogui.moveTo(charette_x, charette_y, RandomTimeClic(), pyautogui.easeInOutQuad)
-                pyautogui.click(charette_x, charette_y)
-
-                time.sleep(1)
-                
-                # Recupere l'elixir 
-                pyautogui.moveTo(btn_recuperer_charette[0], btn_recuperer_charette[1], RandomTimeClic(), pyautogui.easeInOutQuad)
-                pyautogui.click(btn_recuperer_charette[0], btn_recuperer_charette[1])
-                pyautogui.moveTo(btn_quitter_charette[0], btn_quitter_charette[1], RandomTimeClic(), pyautogui.easeInOutQuad)
-                pyautogui.click(btn_quitter_charette[0], btn_quitter_charette[1])
-
-                print("Elixir récupéré !")
-
-            except pyautogui.ImageNotFoundException:
-                print("Charette à élixir pas trouvé, on passe à la suite")
-            
-
-
+            self.Scroll()
+            self.FindElixir()
