@@ -4,24 +4,25 @@ import os
 import random
 import pytesseract
 from PIL import Image
+from ..bot import Bot
 
 # Lien vers pytesseract
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-class FarmMDO():
+class FarmMDO(Bot):
     def __init__(self):
+        super().__init__(None)
+
         # Image Charette elixir
-        self.image_charette = os.path.join(os.path.dirname(__file__), 'images/charette_elixir.png')
+        BASE_DIR = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..")
+        )
 
-        # Longueurs initiales
-        self.x_width_init = 865
-        self.y_height_init = 484
-
-        # Valeurs de l'utilisateurs
-        self.x_width_user = None
-        self.y_height_user = None
-        self.x_left_user = None
-        self.y_left_user = None
+        self.image_charette = os.path.join(
+            BASE_DIR,
+            "images",
+            "charette_elixir.png"
+        )
 
         # Coordonnées boutons
         self.buttons = {}
@@ -37,37 +38,15 @@ class FarmMDO():
     @property
     def x_ratio(self):
         return self.x_width_user / self.x_width_init
-
-
-    def DefineUserCoordinates(self):
-        print("Mettez la souris en haut a gauche de la fenetre")
-        time.sleep(3)
-        self.x_left_user, self.y_left_user = pyautogui.position()
-        print("Mettez la souris en bas a droite de la fenetre")
-        time.sleep(3)
-        x_droite_user, y_droite_user = pyautogui.position()
-
-        self.x_width_user = x_droite_user - self.x_left_user
-        self.y_height_user = y_droite_user - self.y_left_user
     
-
-    def ScaleXY(self, x_base, y_base):
-        x_ratio_btn = x_base / self.x_width_init
-        y_ratio_btn = y_base / self.y_height_init
-
-        new_x = self.x_left_user + x_ratio_btn * self.x_width_user
-        new_y = self.y_left_user + y_ratio_btn * self.y_height_user
-
-        return new_x,new_y
-
     def SetupPositions(self):
         # Boutons
         self.buttons = {
             "attack" : self.ScaleXY(50, 437),
             "find" : self.ScaleXY(642, 322),
-            "surrender" : self.ScaleXY(52, 463),
+            "surrender" : self.ScaleXY(52, 363),
             "surrender_okay" : self.ScaleXY(511, 300),
-            "return_home" : self.ScaleXY(432, 447),
+            "return_home" : self.ScaleXY(432, 409),
             "elixir_cart_take" : self.ScaleXY(638, 407),
             "elixir_cart_leave" : self.ScaleXY(725, 49),
             "scroll_start" : self.ScaleXY(700,262), 
@@ -88,17 +67,7 @@ class FarmMDO():
             self.ScaleXY(x, y) for x, y in troups_spawn_init 
         ]
 
-    @staticmethod
-    def RandomClickTime():
-        return random.uniform(0.4, 0.6)
-    
-    @staticmethod
-    def RandomWaitTime():
-        return random.uniform(0.9, 1.3)
 
-    def Click(self, position):
-        pyautogui.moveTo(position[0], position[1],  self.RandomClickTime(), pyautogui.easeInOutQuad)
-        pyautogui.click()
 
     def Attack(self):
         # Attaquer puis trouver un adversaire
@@ -142,17 +111,15 @@ class FarmMDO():
         pyautogui.mouseUp(button='left')
     
     def FindElixir(self):
-        # redimensionne l'image en fonction des x / y du user
-        image = Image.open(self.image_charette)
-        nouvelle_largeur = int(image.width * self.x_ratio)
-        nouvelle_hauteur = int(image.height * self.x_ratio)
-        image_resized = image.resize((nouvelle_largeur, nouvelle_hauteur))
-            
-        charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.6)
-        self.Click((charette_x, charette_y))
-
         try:
-            self.FindElixir()
+            # redimensionne l'image en fonction des x / y du user
+            image = Image.open(self.image_charette)
+            nouvelle_largeur = int(image.width * self.x_ratio)
+            nouvelle_hauteur = int(image.height * self.x_ratio)
+            image_resized = image.resize((nouvelle_largeur, nouvelle_hauteur))
+                
+            charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.6)
+            self.Click((charette_x, charette_y))
 
             time.sleep(1)
                 
