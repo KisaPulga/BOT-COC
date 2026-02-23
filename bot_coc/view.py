@@ -20,6 +20,7 @@ class View:
         print(r"╠══════════════════════════════════════════════════════════════════════╣")
         print(r"║                     [1] Farm MDO                                     ║")
         print(r"║                     [2] Farm CLASSIQUE                               ║")
+        print(r"║                     [7] TEST                                         ║")
         print(r"║                     [8] Paramètre fenêtre                            ║")
         print(r"║                     [9] Quitter                                      ║")
         print(r"╚══════════════════════════════════════════════════════════════════════╝")

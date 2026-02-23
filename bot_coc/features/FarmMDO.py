@@ -69,7 +69,7 @@ class FarmMDO:
         self.bot.Click(self.buttons["find"])
 
         # On attend de trouver un adversaire
-        time.sleep(random.uniform(9, 12))
+        time.sleep(random.uniform(8, 10))
 
         # Vérifie s'il y a au moins un héros, demandé au user au début
         base_troups = self.x_troups if self.heros else self.x_troups[:-1]
@@ -109,10 +109,10 @@ class FarmMDO:
             # redimensionne l'image en fonction des x / y du user
             image = Image.open(self.image_charette)
             nouvelle_largeur = int(image.width * self.bot.x_ratio)
-            nouvelle_hauteur = int(image.height * self.bot.x_ratio)
+            nouvelle_hauteur = int(image.height * self.bot.y_ratio)
             image_resized = image.resize((nouvelle_largeur, nouvelle_hauteur))
                 
-            charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.6)
+            charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.5)
             self.bot.Click((charette_x, charette_y))
 
             time.sleep(1)
@@ -127,7 +127,7 @@ class FarmMDO:
             print("Charette à élixir pas trouvé, peut être au prochain tour !")
 
 
-    def RunFarmMDO(self):
+    def RunFEAT(self):
 
         self.SetupPositions()
 
@@ -137,7 +137,7 @@ class FarmMDO:
 
         while(True):
             print("--------------------------------")
-            for i in range(5):
+            for i in range(1):
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")

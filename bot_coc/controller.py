@@ -15,7 +15,7 @@ class Controller:
             except ValueError:
                 print("Entrée invalide ! Veuillez saisir un chiffre.")
 
-    def log(self, message):
+    def CallView(self, message):
         self.view.ShowText(message)
 
     def CallCheckWindow(self):
@@ -35,9 +35,13 @@ class Controller:
                     if(self.CallCheckWindow()):
                         self.bot.FarmMDO()
                 case 2:
-                    print("Choix 2")
+                    if(self.CallCheckWindow()):
+                        self.bot.FarmPRINCIPAL()
+                case 7:
+                    if(self.CallCheckWindow()):
+                        self.bot.SetZoom()
                 case 8:
-                    self.bot.DefineUserCoordinates(self.log)
+                    self.bot.DefineUserCoordinates(self.CallView)
                 case 9:
                     print("Merci d'avoir utiliser le bot !")
                     print("A une prochaine !")
