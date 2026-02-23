@@ -6,7 +6,7 @@ class View:
     def __init__(self):
         pass
 
-    def MenuPrincipal(self):
+    def Home(self):
         print(r"╔══════════════════════════════════════════════════════════════════════╗")
         print(r"║        _  __ _            ___        _  ( )     ___       _          ║")
         print(r"║       | |/ /(_) ___ __ _ | _ \ _  _ | |  \|    | _ ) ___ | |_        ║")
@@ -20,5 +20,9 @@ class View:
         print(r"╠══════════════════════════════════════════════════════════════════════╣")
         print(r"║                     [1] Farm MDO                                     ║")
         print(r"║                     [2] Farm CLASSIQUE                               ║")
+        print(r"║                     [8] Paramètre fenêtre                            ║")
         print(r"║                     [9] Quitter                                      ║")
         print(r"╚══════════════════════════════════════════════════════════════════════╝")
+
+    def ShowText(self, message):
+        print(message)
