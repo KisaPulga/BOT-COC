@@ -61,12 +61,20 @@ class FarmMDO:
             self.bot.ScaleXY(x, y) for x, y in troups_spawn_init 
         ]
 
+    def FindAttack(self):
+        self.bot.Click(self.buttons["attack"])
+        self.bot.Click(self.buttons["find"])
+
+    def LeaveAttack(self):
+        # Abandonne l'attaque et rentre
+        self.bot.Click(self.buttons["surrender"])
+        self.bot.Click(self.buttons["surrender_okay"])
+        self.bot.Click(self.buttons["return_home"])
 
 
     def Attack(self):
         # Attaquer puis trouver un adversaire
-        self.bot.Click(self.buttons["attack"])
-        self.bot.Click(self.buttons["find"])
+        self.FindAttack()
 
         # On attend de trouver un adversaire
         time.sleep(random.uniform(8, 10))
@@ -89,11 +97,8 @@ class FarmMDO:
 
         # Patiente un peu
         time.sleep(random.uniform(2, 4))
+        self.LeaveAttack()
 
-        # Abandonne l'attaque et rentre
-        self.bot.Click(self.buttons["surrender"])
-        self.bot.Click(self.buttons["surrender_okay"])
-        self.bot.Click(self.buttons["return_home"])
 
     def Scroll(self):
         # Scroll pour aller vers la charette à Elixir
