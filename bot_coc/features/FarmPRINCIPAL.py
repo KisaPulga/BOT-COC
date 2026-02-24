@@ -36,14 +36,14 @@ class FarmPRINCIPAL:
         self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
         troups_spawn_init = [
-            (126,193),(198,147),(258,101),(320,62),(373,22),(528,13),(588,52),(649,94),(704,134),(756,175),(303,71)
+            (150,172),(185,143),(232,109),(289,72),(332,35),(358,18),(297,41),(234,88),(160,145),(211,141),(249,75),(151,190),(155,151),(254,100),(116,208),(343,15),(299,45)
         ]
         self.spawn_troups_positions = [
             self.bot.ScaleXY(x, y) for x, y in troups_spawn_init
         ]
 
         troups_spell_init = [
-            (237,217),(330,147),(440,78),(522,122),(628,197)
+            (221,194),(328,132),(418,72),(407,131),(298,208),(379,180)
         ]
         self.spawn_spell_positions= [
             self.bot.ScaleXY(x, y) for x, y in troups_spell_init 
