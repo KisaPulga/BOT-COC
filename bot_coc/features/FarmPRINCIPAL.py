@@ -1,14 +1,22 @@
-from ..bot import Bot
+import time
+import pyautogui
+import os
+import random
+import pytesseract
+from PIL import Image
 
-class FarmPRINCIPAL(Bot):
-    def __init__(self):
+class FarmPRINCIPAL:
+    def __init__(self, bot):
+        self.bot = bot
         # Coordonnées boutons
         self.buttons = {}
         self.x_troups = []
         self.y_troups = None
         self.spawn_positions = []
 
+        # Nombre de héros dispo, et nombre de troupe d'evenement
         self.heros = 4
+        self.troup_event = 1
 
     def SetupPositions(self):
         # Boutons
@@ -16,16 +24,13 @@ class FarmPRINCIPAL(Bot):
             "attack1" : self.ScaleXY(50, 437),
             "find" : self.ScaleXY(121, 336),
             "attack2" : self.ScaleXY(735, 414),
-            "surrender" : self.ScaleXY(52, 363),
-            "surrender_okay" : self.ScaleXY(511, 300),
-            "return_home" : self.ScaleXY(432, 409),
-            "elixir_cart_take" : self.ScaleXY(638, 407),
-            "elixir_cart_leave" : self.ScaleXY(725, 49),
-            "scroll_start" : self.ScaleXY(700,262), 
-            "scroll_end" : self.ScaleXY(700,462)
+            "surrender" : self.ScaleXY(51, 382),
+            "surrender_okay" : self.ScaleXY(513, 301),
+            "return_home" : self.ScaleXY(434, 415),
         }
-    
-        x_troups_init = [147, 213, 268, 326, 382, 439, 495]
+
+        # enlever 2 valeur a self.x_troups si pas de troupe d'event
+        x_troups_init = [155, 209, 270, 325, 377, 431, 494, 547]
         self.y_troups = self.ScaleXY(0,444)[1]
         self.x_troups = [self.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
@@ -39,3 +44,16 @@ class FarmPRINCIPAL(Bot):
             self.ScaleXY(x, y) for x, y in troups_spawn_init 
         ]
 
+    def Attack(self):
+        # Attaquer puis trouver un adversaire
+        self.bot.Click(self.buttons["attack"])
+        self.bot.Click(self.buttons["find"])
+
+        # On attend de trouver un adversaire
+        time.sleep(random.uniform(8, 10))
+
+        
+
+
+    def RunFEAT(self):
+        self.bot.SetZoom()

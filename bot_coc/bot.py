@@ -5,10 +5,11 @@
 import time
 import pyautogui
 import random
+from bot_coc.features.FarmMDO import FarmMDO
+from bot_coc.features.FarmPRINCIPAL import FarmPRINCIPAL
 
 class Bot():
-    def __init__(self, farmMDO):
-        self.farm_mdo = farmMDO
+    def __init__(self):
 
         # Longueurs initiales
         self.x_width_init = 865
@@ -20,6 +21,11 @@ class Bot():
         self.x_left_user = None
         self.y_left_user = None
 
+
+        # On initialise un objet par feature
+        self.farm_mdo = FarmMDO(self)
+        self.farm_principal = FarmPRINCIPAL(self)
+
     @staticmethod
     def RandomClickTime():
         return random.uniform(0.4, 0.6)
@@ -27,17 +33,34 @@ class Bot():
     @staticmethod
     def RandomWaitTime():
         return random.uniform(0.9, 1.3)
+    
+    @property
+    def x_ratio(self):
+        return self.x_width_user / self.x_width_init
 
-    def DefineUserCoordinates(self):
-        print("Mettez la souris en haut a gauche de la fenetre")
-        time.sleep(3)
+    @property
+    def y_ratio(self):
+        return self.y_height_user / self.y_height_init
+
+    def DefineUserCoordinates(self, callbackView):
+        
+        callbackView("Place la souris en haut à gauche puis appuie sur ENTER")
+        input()
         self.x_left_user, self.y_left_user = pyautogui.position()
-        print("Mettez la souris en bas a droite de la fenetre")
-        time.sleep(3)
+        callbackView(f"Top Left : {self.x_left_user}, {self.y_left_user}")
+
+        callbackView("Place la souris en bas à droite puis appuie sur ENTER")
+        input()
         x_right_user, y_right_user = pyautogui.position()
+        callbackView(f"Bottom Right : {x_right_user}, {y_right_user}")
 
         self.x_width_user = x_right_user - self.x_left_user
         self.y_height_user = y_right_user - self.y_left_user
+
+        callbackView("")
+        callbackView("Paramétrage terminé, vous pouvez maintenant utiliser le bot !")
+
+
     
     def Click(self, position):
         pyautogui.moveTo(position[0], position[1],  self.RandomClickTime(), pyautogui.easeInOutQuad)
@@ -52,6 +75,25 @@ class Bot():
 
         return new_x,new_y
     
+    def CheckWindow(self):
+        if self.x_width_user is None or self.y_height_user is None:
+            return False, "Avant d'utiliser le bot, vous devez le paramétrer."
+        else:
+            return True, "Ok"
+        
+    def FindMiddle(self):
+        pyautogui.moveTo((self.x_left_user + (self.x_width_user / 2)), (self.y_left_user + (self.y_height_user / 2)),  self.RandomClickTime(), pyautogui.easeInOutQuad)
+
+    def SetZoom(self):
+        self.FindMiddle()
+        for i in range(25):
+            pyautogui.scroll(1000)
+        for i in range(16):
+            pyautogui.scroll(-1000)
+    
     def FarmMDO(self):
-        self.farm_mdo.RunFarmMDO()
+        self.farm_mdo.RunFEAT()
+
+    def FarmPRINCIPAL(self):
+        self.farm_principal.RunFEAT()
         

@@ -4,15 +4,13 @@ import os
 import random
 import pytesseract
 from PIL import Image
-from ..bot import Bot
 
 # Lien vers pytesseract
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-class FarmMDO(Bot):
-    def __init__(self):
-        super().__init__(None)
-
+class FarmMDO:
+    def __init__(self, bot):
+        self.bot = bot
         # Image Charette elixir
         BASE_DIR = os.path.abspath(
         os.path.join(os.path.dirname(__file__), "..", "..")
@@ -35,27 +33,23 @@ class FarmMDO(Bot):
 
         self.heros = False # a modifier si on a un héro
     
-    @property
-    def x_ratio(self):
-        return self.x_width_user / self.x_width_init
-    
     def SetupPositions(self):
         # Boutons
         self.buttons = {
-            "attack" : self.ScaleXY(50, 437),
-            "find" : self.ScaleXY(642, 322),
-            "surrender" : self.ScaleXY(52, 363),
-            "surrender_okay" : self.ScaleXY(511, 300),
-            "return_home" : self.ScaleXY(432, 409),
-            "elixir_cart_take" : self.ScaleXY(638, 407),
-            "elixir_cart_leave" : self.ScaleXY(725, 49),
-            "scroll_start" : self.ScaleXY(700,262), 
-            "scroll_end" : self.ScaleXY(700,462)
+            "attack" : self.bot.ScaleXY(50, 437),
+            "find" : self.bot.ScaleXY(642, 322),
+            "surrender" : self.bot.ScaleXY(52, 363),
+            "surrender_okay" : self.bot.ScaleXY(511, 300),
+            "return_home" : self.bot.ScaleXY(432, 409),
+            "elixir_cart_take" : self.bot.ScaleXY(638, 407),
+            "elixir_cart_leave" : self.bot.ScaleXY(725, 49),
+            "scroll_start" : self.bot.ScaleXY(700,262), 
+            "scroll_end" : self.bot.ScaleXY(700,462)
         }
     
         x_troups_init = [147, 213, 268, 326, 382, 439, 495]
-        self.y_troups = self.ScaleXY(0,444)[1]
-        self.x_troups = [self.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
+        self.y_troups = self.bot.ScaleXY(0,444)[1]
+        self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
         troups_spawn_init = [
             (728,85),(778,322),(817,165),(737,345),
@@ -64,18 +58,18 @@ class FarmMDO(Bot):
             (253,19),(595,385)
         ]
         self.spawn_positions = [
-            self.ScaleXY(x, y) for x, y in troups_spawn_init 
+            self.bot.ScaleXY(x, y) for x, y in troups_spawn_init 
         ]
 
 
 
     def Attack(self):
         # Attaquer puis trouver un adversaire
-        self.Click(self.buttons["attack"])
-        self.Click(self.buttons["find"])
+        self.bot.Click(self.buttons["attack"])
+        self.bot.Click(self.buttons["find"])
 
         # On attend de trouver un adversaire
-        time.sleep(random.uniform(9, 12))
+        time.sleep(random.uniform(8, 10))
 
         # Vérifie s'il y a au moins un héros, demandé au user au début
         base_troups = self.x_troups if self.heros else self.x_troups[:-1]
@@ -85,47 +79,47 @@ class FarmMDO(Bot):
         # On boucle sur le nombre de troupe pour les placer
         for troup_x in put_troups:
             spawn = random.choice(self.spawn_positions)
-            self.Click((troup_x,self.y_troups))
-            self.Click(spawn)
+            self.bot.Click((troup_x,self.y_troups))
+            self.bot.Click(spawn)
 
         #Active les capacités des troupes
         ability_troups = self.x_troups if self.heros else self.x_troups[:-1]
         for troup_x in ability_troups:
-            self.Click((troup_x, self.y_troups))
+            self.bot.Click((troup_x, self.y_troups))
 
         # Patiente un peu
         time.sleep(random.uniform(2, 4))
 
         # Abandonne l'attaque et rentre
-        self.Click(self.buttons["surrender"])
-        self.Click(self.buttons["surrender_okay"])
-        self.Click(self.buttons["return_home"])
+        self.bot.Click(self.buttons["surrender"])
+        self.bot.Click(self.buttons["surrender_okay"])
+        self.bot.Click(self.buttons["return_home"])
 
     def Scroll(self):
         # Scroll pour aller vers la charette à Elixir
-        pyautogui.moveTo(self.buttons["scroll_start"][0],self.buttons["scroll_start"][1], self.RandomClickTime(), pyautogui.easeInOutQuad)
+        pyautogui.moveTo(self.buttons["scroll_start"][0],self.buttons["scroll_start"][1], self.bot.RandomClickTime(), pyautogui.easeInOutQuad)
         time.sleep(0.2)
         pyautogui.mouseDown(button='left')
         time.sleep(0.2)
-        pyautogui.moveTo(self.buttons["scroll_end"][0],self.buttons["scroll_end"][1], self.RandomClickTime(), pyautogui.easeInOutQuad)
+        pyautogui.moveTo(self.buttons["scroll_end"][0],self.buttons["scroll_end"][1], self.bot.RandomClickTime(), pyautogui.easeInOutQuad)
         pyautogui.mouseUp(button='left')
     
     def FindElixir(self):
         try:
             # redimensionne l'image en fonction des x / y du user
             image = Image.open(self.image_charette)
-            nouvelle_largeur = int(image.width * self.x_ratio)
-            nouvelle_hauteur = int(image.height * self.x_ratio)
+            nouvelle_largeur = int(image.width * self.bot.x_ratio)
+            nouvelle_hauteur = int(image.height * self.bot.y_ratio)
             image_resized = image.resize((nouvelle_largeur, nouvelle_hauteur))
                 
-            charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.6)
-            self.Click((charette_x, charette_y))
+            charette_x, charette_y = pyautogui.locateCenterOnScreen(image_resized, confidence=0.5)
+            self.bot.Click((charette_x, charette_y))
 
             time.sleep(1)
                 
             # Recupere l'elixir 
-            self.Click(self.buttons["elixir_cart_take"])
-            self.Click(self.buttons["elixir_cart_leave"])
+            self.bot.Click(self.buttons["elixir_cart_take"])
+            self.bot.Click(self.buttons["elixir_cart_leave"])
 
             print("Elixir récupéré !")
 
@@ -133,9 +127,8 @@ class FarmMDO(Bot):
             print("Charette à élixir pas trouvé, peut être au prochain tour !")
 
 
-    def RunFarmMDO(self):
+    def RunFEAT(self):
 
-        self.DefineUserCoordinates()
         self.SetupPositions()
 
 
@@ -144,7 +137,7 @@ class FarmMDO(Bot):
 
         while(True):
             print("--------------------------------")
-            for i in range(5):
+            for i in range(1):
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")
