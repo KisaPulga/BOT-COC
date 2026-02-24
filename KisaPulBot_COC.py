@@ -11,7 +11,6 @@
 from bot_coc.controller import Controller
 from bot_coc.view import View
 from bot_coc.bot import Bot
-from bot_coc.features import FarmMDO
 
 view = View()
 bot = Bot()

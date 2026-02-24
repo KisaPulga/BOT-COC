@@ -1,7 +1,7 @@
 #################
 #   CLASS BOT   #
 #################
-
+  
 import time
 import pyautogui
 import random
@@ -44,26 +44,36 @@ class Bot():
 
     def DefineUserCoordinates(self, callbackView):
         
-        callbackView("Place la souris en haut à gauche puis appuie sur ENTER")
-        input()
-        self.x_left_user, self.y_left_user = pyautogui.position()
-        callbackView(f"Top Left : {self.x_left_user}, {self.y_left_user}")
+        # callbackView("Place la souris en haut à gauche puis appuie sur ENTER")
+        # input()
+        # self.x_left_user, self.y_left_user = pyautogui.position()
+        # callbackView(f"Top Left : {self.x_left_user}, {self.y_left_user}")
 
-        callbackView("Place la souris en bas à droite puis appuie sur ENTER")
-        input()
-        x_right_user, y_right_user = pyautogui.position()
-        callbackView(f"Bottom Right : {x_right_user}, {y_right_user}")
+        # callbackView("Place la souris en bas à droite puis appuie sur ENTER")
+        # input()
+        # x_right_user, y_right_user = pyautogui.position()
+        # callbackView(f"Bottom Right : {x_right_user}, {y_right_user}")
 
+        # self.x_width_user = x_right_user - self.x_left_user
+        # self.y_height_user = y_right_user - self.y_left_user
+
+        # callbackView("")
+        # callbackView("Paramétrage terminé, vous pouvez maintenant utiliser le bot !")
+
+        self.x_left_user = -1172
+        self.y_left_user = 79
+        x_right_user = -293
+        y_right_user = 574
         self.x_width_user = x_right_user - self.x_left_user
         self.y_height_user = y_right_user - self.y_left_user
 
-        callbackView("")
-        callbackView("Paramétrage terminé, vous pouvez maintenant utiliser le bot !")
-
-
-    
     def Click(self, position):
         pyautogui.moveTo(position[0], position[1],  self.RandomClickTime(), pyautogui.easeInOutQuad)
+        pyautogui.click()
+    
+    def ClickFast(self, position):
+        pyautogui.moveTo(position[0], position[1],  0.1, pyautogui.easeInOutQuad)
+        time.sleep(0.1)
         pyautogui.click()
     
     def ScaleXY(self, x_base, y_base):
