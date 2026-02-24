@@ -43,7 +43,7 @@ class FarmPRINCIPAL:
         ]
 
         troups_spell_init = [
-            (221,194),(328,132),(418,72),(407,131),(298,208),(379,180)
+            (221,194),(328,132),(418,72),(315,229),(444,132),(417,231)
         ]
         self.spawn_spell_positions= [
             self.bot.ScaleXY(x, y) for x, y in troups_spell_init 
@@ -71,10 +71,48 @@ class FarmPRINCIPAL:
         base_troups = base_troups if not self.troup_event else base_troups[:-1]
 
         if(self.troup_event):
-            self.bot.Click((base_troups[0], self.y_troups))
+            self.bot.ClickFast((base_troups[0], self.y_troups))
             for spawn in self.spawn_troups_positions:
                 self.bot.ClickFast(spawn)
-                print(spawn)
+            
+            self.bot.ClickFast((base_troups[1], self.y_troups))
+            for spawn in self.spawn_troups_positions:
+                self.bot.ClickFast(spawn)
+
+            self.bot.ClickFast((base_troups[2], self.y_troups))
+            self.bot.ClickFast(self.spawn_troups_positions[0])
+
+            self.bot.ClickFast((base_troups[3], self.y_troups))
+            self.bot.ClickFast(self.spawn_troups_positions[1])
+
+            self.bot.ClickFast((base_troups[4], self.y_troups))
+            self.bot.ClickFast(self.spawn_troups_positions[2])
+
+            self.bot.ClickFast((base_troups[5], self.y_troups))
+            self.bot.ClickFast(self.spawn_troups_positions[3])
+
+            self.bot.ClickFast((base_troups[6], self.y_troups))
+            for spawn in self.spawn_spell_positions:
+                self.bot.ClickFast(spawn)
+
+            time.sleep(6)
+            self.bot.ClickFast((base_troups[2], self.y_troups))
+            time.sleep(1)
+            self.bot.ClickFast((base_troups[3], self.y_troups))
+            time.sleep(1)
+            self.bot.ClickFast((base_troups[4], self.y_troups))
+            time.sleep(1)
+            self.bot.ClickFast((base_troups[5], self.y_troups))
+            time.sleep(1)
+
+
+        
+        time.sleep(25)
+        self.LeaveAttack()
+
+            
+
+            
 
 
 
@@ -82,4 +120,6 @@ class FarmPRINCIPAL:
         self.SetupPositions()
 
         time.sleep(2)
-        self.Attack()
+        while(True):
+            self.Attack()
+            time.sleep(6)
