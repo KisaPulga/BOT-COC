@@ -67,53 +67,60 @@ class FarmPRINCIPAL:
         # On attend de trouver un adversaire
         time.sleep(random.uniform(8, 10))
 
-        base_troups = self.x_troups[:-self.heros] if self.heros > 0 else self.x_troups.copy()
-        base_troups = base_troups if not self.troup_event else base_troups[:-1]
+        units = self.x_troups.copy()
+        index = 0
 
+        # Position X troupe evenement
+        x_trp_event = None
         if(self.troup_event):
-            self.bot.ClickFast((base_troups[0], self.y_troups))
-            for spawn in self.spawn_troups_positions:
-                self.bot.ClickFast(spawn)
-            
-            self.bot.ClickFast((base_troups[1], self.y_troups))
-            for spawn in self.spawn_troups_positions:
-                self.bot.ClickFast(spawn)
-
-            self.bot.ClickFast((base_troups[2], self.y_troups))
-            self.bot.ClickFast(self.spawn_troups_positions[0])
-
-            self.bot.ClickFast((base_troups[3], self.y_troups))
-            self.bot.ClickFast(self.spawn_troups_positions[1])
-
-            self.bot.ClickFast((base_troups[4], self.y_troups))
-            self.bot.ClickFast(self.spawn_troups_positions[2])
-
-            self.bot.ClickFast((base_troups[5], self.y_troups))
-            self.bot.ClickFast(self.spawn_troups_positions[3])
-
-            self.bot.ClickFast((base_troups[6], self.y_troups))
-            for spawn in self.spawn_spell_positions:
-                self.bot.ClickFast(spawn)
-
-            time.sleep(6)
-            self.bot.ClickFast((base_troups[2], self.y_troups))
-            time.sleep(1)
-            self.bot.ClickFast((base_troups[3], self.y_troups))
-            time.sleep(1)
-            self.bot.ClickFast((base_troups[4], self.y_troups))
-            time.sleep(1)
-            self.bot.ClickFast((base_troups[5], self.y_troups))
-            time.sleep(1)
-
-
+            x_trp_event = units[index]
+            index += 1
         
-        time.sleep(25)
+        # Position X electro drag
+        x_trp_edrag = units[index]
+        index +=1
+
+        # Positions X de chaque héros
+        nbr_heros = 4 - self.heros
+        x_heroes = units[index:index+nbr_heros]
+        index += nbr_heros
+
+        # Position X sorts
+        x_spell = units[index]
+
+
+        # Spawn electro drag
+        self.bot.ClickFast((x_trp_edrag, self.y_troups))
+        for spawn_edrag in self.spawn_troups_positions :
+                self.bot.ClickFast(spawn_edrag)
+
+        # Spawn troupe evenement
+        if(x_trp_event):
+            self.bot.ClickFast((x_trp_event, self.y_troups))
+            for spawn_event in self.spawn_troups_positions :
+                self.bot.ClickFast(spawn_event)
+
+        # Spawn héros - on met un héro 1 position sur 2
+        for i, x_hero in enumerate(x_heroes):
+            i *= 2
+            self.bot.ClickFast((x_hero, self.y_troups))
+            self.bot.ClickFast((self.spawn_troups_positions[i]))
+
+        # Spawn spell
+        self.bot.ClickFast((x_spell, self.y_troups))
+        for spawn_spell in self.spawn_spell_positions:
+            self.bot.ClickFast((spawn_spell))
+
+        # Activer capacité héros
+        time.sleep(6)
+        for capa_hero in x_heroes:
+            self.bot.Click((capa_hero, self.y_troups))
+            
+        # Attente destruction village
+        time.sleep(15)
         self.LeaveAttack()
 
             
-
-            
-
 
 
     def RunFEAT(self):
