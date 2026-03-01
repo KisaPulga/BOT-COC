@@ -19,7 +19,7 @@ class FarmPRINCIPAL:
 
         # Nombre de héros manquant, et nombre de troupe d'evenement
         self.heros = 0
-        self.troup_event = True
+        self.troup_event = False
 
         # Vérificateur
         # (832,383)  (224.224.224) # Pourcentage principal
@@ -152,7 +152,7 @@ class FarmPRINCIPAL:
         while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
             time.sleep(2)
             if time.time() - start_wait > 40:
-                return
+                break
         self.LeaveAttack()
 
 
