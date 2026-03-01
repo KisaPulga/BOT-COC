@@ -146,10 +146,13 @@ class FarmPRINCIPAL:
         time.sleep(6)
         for capa_hero in x_heroes:
             self.bot.Click((capa_hero, self.y_troups))
-            
-        # Attente destruction village
-        while not (self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170))):
+        
+        start_wait = time.time()
+
+        while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
             time.sleep(2)
+            if time.time() - start_wait > 40:
+                return
         self.LeaveAttack()
 
 
