@@ -77,7 +77,8 @@ class FarmMDO:
         self.FindAttack()
 
         # On attend de trouver un adversaire
-        time.sleep(random.uniform(8, 10))
+        while not (self.bot.VerifyPixel(self.bot.ScaleXY(224,415),(198,52,255))):
+            time.sleep(2)
 
         # Vérifie s'il y a au moins un héros, demandé au user au début
         base_troups = self.x_troups if self.heros else self.x_troups[:-1]
@@ -142,7 +143,7 @@ class FarmMDO:
 
         while(True):
             print("--------------------------------")
-            for i in range(1):
+            for i in range(5):
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")
@@ -150,7 +151,7 @@ class FarmMDO:
                 self.Attack()
 
                 # Patiente un peu
-                time.sleep(random.uniform(4, 6))
+                time.sleep(random.uniform(3, 4))
 
                 # Calcule le temps et l'affiche
                 end_time = time.time()

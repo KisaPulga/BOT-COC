@@ -101,12 +101,19 @@ class Bot():
         for i in range(16):
             pyautogui.scroll(-1000)
 
-    def VerifyPixel(self, position, color):
-        verif_color = pyautogui.pixel(position[0], position[1])
-        if(verif_color == color):
-            return True
-        else:
-            return False
+    def VerifyPixel(self, position, color, tolerance=0.3):
+        x = int(position[0])
+        y = int(position[1])
+        
+        pixel = pyautogui.pixel(x, y)
+        
+        for i in range(3):  # R, G, B
+            min_val = int(color[i] * (1 - tolerance))
+            max_val = int(color[i] * (1 + tolerance))
+            
+            if not (min_val <= pixel[i] <= max_val):
+                return False
+        return True
     
     def FarmMDO(self):
         self.farm_mdo.RunFEAT()
