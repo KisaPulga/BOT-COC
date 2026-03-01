@@ -1,7 +1,7 @@
 #################
 #   CLASS BOT   #
 #################
-
+  
 import time
 import pyautogui
 import random
@@ -60,10 +60,20 @@ class Bot():
         callbackView("")
         callbackView("Paramétrage terminé, vous pouvez maintenant utiliser le bot !")
 
+        # self.x_left_user = -1172
+        # self.y_left_user = 79
+        # x_right_user = -293
+        # y_right_user = 574
+        # self.x_width_user = x_right_user - self.x_left_user
+        # self.y_height_user = y_right_user - self.y_left_user
 
-    
     def Click(self, position):
         pyautogui.moveTo(position[0], position[1],  self.RandomClickTime(), pyautogui.easeInOutQuad)
+        pyautogui.click()
+    
+    def ClickFast(self, position):
+        pyautogui.moveTo(position[0], position[1],  0.1, pyautogui.easeInOutQuad)
+        time.sleep(0.1)
         pyautogui.click()
     
     def ScaleXY(self, x_base, y_base):
@@ -90,6 +100,20 @@ class Bot():
             pyautogui.scroll(1000)
         for i in range(16):
             pyautogui.scroll(-1000)
+
+    def VerifyPixel(self, position, color, tolerance=0.3):
+        x = int(position[0])
+        y = int(position[1])
+        
+        pixel = pyautogui.pixel(x, y)
+        
+        for i in range(3):  # R, G, B
+            min_val = int(color[i] * (1 - tolerance))
+            max_val = int(color[i] * (1 + tolerance))
+            
+            if not (min_val <= pixel[i] <= max_val):
+                return False
+        return True
     
     def FarmMDO(self):
         self.farm_mdo.RunFEAT()
