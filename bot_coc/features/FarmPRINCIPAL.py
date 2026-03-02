@@ -1,9 +1,5 @@
 import time
-import pyautogui
-import os
 import random
-import pytesseract
-from PIL import Image
 
 class FarmPRINCIPAL:
     def __init__(self, bot):
@@ -73,13 +69,17 @@ class FarmPRINCIPAL:
 
     def FindAttack(self):
         self.bot.Click(self.buttons["attack1"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["find"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["attack2"])
 
     def LeaveAttack(self):
         # Abandonne l'attaque et rentre
         self.bot.Click(self.buttons["surrender"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["surrender_okay"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["return_home"])
 
     def Attack(self):

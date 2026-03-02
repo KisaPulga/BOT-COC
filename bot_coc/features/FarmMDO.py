@@ -2,11 +2,7 @@ import time
 import pyautogui
 import os
 import random
-import pytesseract
 from PIL import Image
-
-# Lien vers pytesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 class FarmMDO:
     def __init__(self, bot):

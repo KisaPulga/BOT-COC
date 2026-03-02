@@ -37,11 +37,18 @@ class Controller:
                 case 2:
                     if(self.CallCheckWindow()):
                         self.bot.FarmPRINCIPAL()
+
+                case 3:
+                    if(self.CallCheckWindow()):
+                        self.bot.WallUPGRADE()
+
                 case 7:
                     if(self.CallCheckWindow()):
                         self.bot.SetZoom()
+
                 case 8:
                     self.bot.DefineUserCoordinates(self.CallView)
+
                 case 9:
                     print("Merci d'avoir utiliser le bot !")
                     print("A une prochaine !")
