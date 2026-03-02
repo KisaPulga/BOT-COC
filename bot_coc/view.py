@@ -21,9 +21,27 @@ class View:
         print(r"║                     [1] Farm MDO                                     ║")
         print(r"║                     [2] Farm CLASSIQUE                               ║")
         print(r"║                     [7] TEST                                         ║")
-        print(r"║                     [8] Paramètre fenêtre                            ║")
+        print(r"║                     [8] Paramètres                                   ║")
         print(r"║                     [9] Quitter                                      ║")
         print(r"╚══════════════════════════════════════════════════════════════════════╝")
 
     def ShowText(self, message):
         print(message)
+
+    def Settings(self):
+        print(r"╔══════════════════════════════════════════════════════════════════════╗")                                                          
+        print(r"║                ____       _   _   _                                  ║")
+        print(r"║               / ___|  ___| |_| |_(_)_ __   __ _ ___                  ║")
+        print(r"║               \___ \ / _ \ __| __| | '_ \ / _` / __|                 ║")
+        print(r"║                ___) |  __/ |_| |_| | | | | (_| \__ \                 ║")
+        print(r"║               |____/ \___|\__|\__|_|_| |_|\__, |___/                 ║")
+        print(r"║                                            |___/                     ║")
+        print(r"║                                                                      ║")
+        print(r"╠══════════════════════════════════════════════════════════════════════╣")
+        print(r"║                     [1] Taille fenêtre                               ║")
+        print(r"║                     [2] Héros MDO                                    ║")
+        print(r"║                     [3] Héros Principal                              ║")
+        print(r"║                     [4] Troupe évènement                             ║")
+        print(r"║                     [5] Nombre de bot                                ║")
+        print(r"║                     [9] Quitter                                      ║")
+        print(r"╚══════════════════════════════════════════════════════════════════════╝")

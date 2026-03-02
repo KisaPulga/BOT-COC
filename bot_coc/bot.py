@@ -66,6 +66,21 @@ class Bot():
         # y_right_user = 574
         # self.x_width_user = x_right_user - self.x_left_user
         # self.y_height_user = y_right_user - self.y_left_user
+    
+    def DefineHereosMDO(self, choix):
+        if choix == "o":
+            self.farm_mdo.heros = True
+        else:
+            self.farm_mdo.heros = False
+
+    def DefineHeroesMAIN(self, choix):
+        self.farm_principal.heros = choix
+
+    def DefineTrpEVENT(self, choix):
+        if choix == "o":
+            self.farm_principal.troup_event = True
+        else:
+            self.farm_principal.troup_event = False
 
     def Click(self, position):
         pyautogui.moveTo(position[0], position[1],  self.RandomClickTime(), pyautogui.easeInOutQuad)
@@ -85,8 +100,8 @@ class Bot():
 
         return new_x,new_y
     
-    def CheckWindow(self):
-        if self.x_width_user is None or self.y_height_user is None:
+    def CheckSettings(self):
+        if self.x_width_user is None or self.y_height_user is None or self.farm_mdo.heros is None or self.farm_principal.heros is None or self.farm_principal.troup_event is None:
             return False, "Avant d'utiliser le bot, vous devez le paramétrer."
         else:
             return True, "Ok"

@@ -31,7 +31,8 @@ class FarmMDO:
         self.x_scroll_start = None
         self.y_scroll_start = None
 
-        self.heros = False # a modifier si on a un héro
+        #Defini depuis bot.py
+        self.heros = None
     
     def SetupPositions(self):
         # Boutons

@@ -18,8 +18,8 @@ class FarmPRINCIPAL:
         self.spawn_spell_positions_2 = []
 
         # Nombre de héros manquant, et nombre de troupe d'evenement
-        self.heros = 0
-        self.troup_event = False
+        self.heros = None
+        self.troup_event = None
 
         # Vérificateur
         # (832,383)  (224.224.224) # Pourcentage principal
