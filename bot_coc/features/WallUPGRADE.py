@@ -36,6 +36,7 @@ class WallUPGRADE:
         self.pos_ressources = {}
         self.gold_color = (213,195,100)
         self.elixir_color = (222,143,222)
+        self.walls = 0
     
     def SetupPositions(self):
         self.buttons = {
@@ -92,6 +93,7 @@ class WallUPGRADE:
                 self.bot.Click(self.buttons["upgrade_gold"])
                 time.sleep(0.3)
                 self.bot.Click(self.buttons["upgrade"])
+                self.walls +=1
 
         if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.15)):
             for i in range (3):
@@ -103,6 +105,7 @@ class WallUPGRADE:
                 self.bot.Click(self.buttons["upgrade_elixir"])
                 time.sleep(0.3)
                 self.bot.Click(self.buttons["upgrade"])
+                self.walls +=1
         
 
     def RunFEAT(self):
@@ -124,7 +127,7 @@ class WallUPGRADE:
             print(pyautogui.pixel(int(self.pos_ressources["storage_elixir"][0]),int(self.pos_ressources["storage_elixir"][1])))
             print(self.elixir_color)
             self.UpgradeWall()
-
+            print(f"Murs amélioré sur cette session : {self.walls} !")
             end_time = time.time()
             temps = round(end_time - start_time, 2)
             print("     Fin, temps écoulé : " + str(temps) + "s")
