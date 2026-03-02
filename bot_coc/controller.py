@@ -55,21 +55,22 @@ class Controller:
                                     choix_heroes_mdo = input()
                                 self.bot.DefineHereosMDO(choix_heroes_mdo)
 
-
                             case 3:
                                 choix_heroes_main = 100
                                 while(choix_heroes_main not in (0, 1,2,3,4)):
                                     self.view.ShowText("Combien de héros avez vous a disposition en attaque ? (0/1/2/3/4)")
                                     choix_heroes_main = int(input())
                                 self.bot.DefineHereosMAIN(choix_heroes_main)
+
                             case 4:
                                 choix_trp_event = "z"
                                 while(choix_trp_event not in ("o", "n")):
                                     self.view.ShowText("Est-ce qu'il y a une troupe d'évènement ? (o/n)")
                                     choix_trp_event = input()
                                 self.bot.DefineTrpEVENT(choix_trp_event)
+
                             case 5:
-                                pass
+                                self.view.ShowText("Pas encore disponible")
                             case 9:
                                 self.view.ShowText("Fin du paramétrage")
 
