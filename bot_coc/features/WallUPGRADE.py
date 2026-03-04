@@ -37,6 +37,7 @@ class WallUPGRADE:
         self.gold_color = (213,195,100)
         self.elixir_color = (222,143,222)
         self.walls = 0
+        self.random = None
     
     def SetupPositions(self):
         self.buttons = {
@@ -48,6 +49,7 @@ class WallUPGRADE:
             "storage_gold" : self.bot.ScaleXY(721,20),
             "storage_elixir" : self.bot.ScaleXY(721,57),
         }
+        self.random = self.bot.ScaleXY(822,200)
     
     def FindWall(self):
         hdv_x, hdv_y = None, None
@@ -84,28 +86,26 @@ class WallUPGRADE:
 
     def UpgradeWall(self):
         if(self.bot.VerifyPixel(self.pos_ressources["storage_gold"], self.gold_color)):
-            for i in range (3):
-                pos = self.FindWall()
-                if pos:
-                    x, y = pos
-                    self.bot.Click((x, y))
-                time.sleep(0.3)
-                self.bot.Click(self.buttons["upgrade_gold"])
-                time.sleep(0.3)
-                self.bot.Click(self.buttons["upgrade"])
-                self.walls +=1
+            pos = self.FindWall()
+            if pos:
+                x, y = pos
+                self.bot.Click((x, y))
+            time.sleep(0.3)
+            self.bot.Click(self.buttons["upgrade_gold"])
+            time.sleep(0.3)
+            self.bot.Click(self.buttons["upgrade"])
+            self.walls +=1
 
         if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.20)):
-            for i in range (3):
-                pos = self.FindWall()
-                if pos:
-                    x, y = pos
-                    self.bot.Click((x, y))
-                time.sleep(0.3)
-                self.bot.Click(self.buttons["upgrade_elixir"])
-                time.sleep(0.3)
-                self.bot.Click(self.buttons["upgrade"])
-                self.walls +=1
+            pos = self.FindWall()
+            if pos:
+                x, y = pos
+                self.bot.Click((x, y))
+            time.sleep(0.3)
+            self.bot.Click(self.buttons["upgrade_elixir"])
+            time.sleep(0.3)
+            self.bot.Click(self.buttons["upgrade"])
+            self.walls +=1
         
 
     def RunFEAT(self):
@@ -121,7 +121,7 @@ class WallUPGRADE:
 
             self.farm_principal.Attack()
 
-            time.sleep(4)
+            time.sleep(3)
 
             print("     Vérification ressources..")
             print(pyautogui.pixel(int(self.pos_ressources["storage_elixir"][0]),int(self.pos_ressources["storage_elixir"][1])))
@@ -133,5 +133,5 @@ class WallUPGRADE:
             print("     Fin, temps écoulé : " + str(temps) + "s")
             compteur += 1
             print("--------------------------------")
-            time.sleep(6)
+            time.sleep(2)
 

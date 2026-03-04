@@ -69,14 +69,17 @@ class FarmPRINCIPAL:
         self.bot.Click(self.buttons["find"])
         time.sleep(0.2)
         self.bot.Click(self.buttons["attack2"])
-        
-        # On attend de trouver un adversaire
+
         start_wait = time.time()
-        while not (self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13))):
-            time.sleep(2)
-            if time.time() - start_wait > 15:
-                print("Temps d'attente trop longue, on relance")
-                self.LeaveInfinityLoop()
+
+        while not self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13)):
+            time.sleep(1)
+
+            if time.time() - start_wait > 20:
+                return False  # pas trouvé
+
+        return True  # trouvé
+
 
     def LeaveAttack(self):
         start_wait = time.time()
@@ -92,14 +95,21 @@ class FarmPRINCIPAL:
         time.sleep(0.2)
         self.bot.Click(self.buttons["return_home"])
 
-    def LeaveInfinityLoop(self):
-        self.bot.ClickFast(self.buttons["attack1"])
-        time.sleep(1)
-        self.FindAttack()
-
 
     def Attack(self):
-        self.FindAttack()
+        while True:
+            success = self.FindAttack()
+
+            if success:
+                print("     Adversaire trouvé !")
+                break  # On sort de la boucle
+
+            print("     Bloqué en recherche → retour maison")
+
+            # Bouton retour maison (même position que attack1)
+            self.bot.ClickFast(self.buttons["attack1"])
+            time.sleep(2)  # Laisse le temps de revenir au village
+
 
         units = self.x_troups.copy()
         index = 0
