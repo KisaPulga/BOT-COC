@@ -95,7 +95,7 @@ class WallUPGRADE:
                 self.bot.Click(self.buttons["upgrade"])
                 self.walls +=1
 
-        if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.15)):
+        if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.20)):
             for i in range (3):
                 pos = self.FindWall()
                 if pos:

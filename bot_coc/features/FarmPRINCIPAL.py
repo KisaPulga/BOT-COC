@@ -15,11 +15,7 @@ class FarmPRINCIPAL:
 
         # Nombre de héros manquant, et nombre de troupe d'evenement
         self.heros = 0
-        self.troup_event = False
-
-        # Vérificateur
-        # (832,383)  (224.224.224) # Pourcentage principal
-        # (757,384) (174,175,170) # etoile farm
+        self.troup_event = True
 
 
     def SetupPositions(self):
@@ -73,8 +69,22 @@ class FarmPRINCIPAL:
         self.bot.Click(self.buttons["find"])
         time.sleep(0.2)
         self.bot.Click(self.buttons["attack2"])
+        
+        # On attend de trouver un adversaire
+        start_wait = time.time()
+        while not (self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13))):
+            time.sleep(2)
+            if time.time() - start_wait > 15:
+                print("Temps d'attente trop longue, on relance")
+                self.LeaveInfinityLoop()
 
     def LeaveAttack(self):
+        start_wait = time.time()
+        while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
+            time.sleep(2)
+            if time.time() - start_wait > 40:
+                break
+
         # Abandonne l'attaque et rentre
         self.bot.Click(self.buttons["surrender"])
         time.sleep(0.2)
@@ -82,12 +92,14 @@ class FarmPRINCIPAL:
         time.sleep(0.2)
         self.bot.Click(self.buttons["return_home"])
 
-    def Attack(self):
+    def LeaveInfinityLoop(self):
+        self.bot.ClickFast(self.buttons["attack1"])
+        time.sleep(1)
         self.FindAttack()
 
-        # On attend de trouver un adversaire
-        while not (self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13))):
-            time.sleep(2)
+
+    def Attack(self):
+        self.FindAttack()
 
         units = self.x_troups.copy()
         index = 0
@@ -146,13 +158,7 @@ class FarmPRINCIPAL:
         time.sleep(6)
         for capa_hero in x_heroes:
             self.bot.Click((capa_hero, self.y_troups))
-        
-        start_wait = time.time()
 
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
-            time.sleep(2)
-            if time.time() - start_wait > 40:
-                break
         self.LeaveAttack()
 
 
