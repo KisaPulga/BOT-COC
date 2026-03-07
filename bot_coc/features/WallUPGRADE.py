@@ -86,26 +86,34 @@ class WallUPGRADE:
 
     def UpgradeWall(self):
         if(self.bot.VerifyPixel(self.pos_ressources["storage_gold"], self.gold_color)):
-            pos = self.FindWall()
-            if pos:
-                x, y = pos
-                self.bot.Click((x, y))
-            time.sleep(0.3)
-            self.bot.Click(self.buttons["upgrade_gold"])
-            time.sleep(0.3)
-            self.bot.Click(self.buttons["upgrade"])
-            self.walls +=1
+            for i in range(1):
+                pos = self.FindWall()
+                if pos:
+                    x, y = pos
+                    self.bot.Click((x, y))
+                time.sleep(0.3)
+                self.bot.Click(self.buttons["upgrade_gold"])
+                time.sleep(0.3)
+                self.bot.Click(self.buttons["upgrade"])
+                time.sleep(0.3)
+                self.bot.Click(self.random)
+                time.sleep(0.3)
+                self.walls +=1
 
         if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.20)):
-            pos = self.FindWall()
-            if pos:
-                x, y = pos
-                self.bot.Click((x, y))
-            time.sleep(0.3)
-            self.bot.Click(self.buttons["upgrade_elixir"])
-            time.sleep(0.3)
-            self.bot.Click(self.buttons["upgrade"])
-            self.walls +=1
+            for i in range(1):
+                pos = self.FindWall()
+                if pos:
+                    x, y = pos
+                    self.bot.Click((x, y))
+                time.sleep(0.3)
+                self.bot.Click(self.buttons["upgrade_elixir"])
+                time.sleep(0.3)
+                self.bot.Click(self.buttons["upgrade"])
+                time.sleep(0.3)
+                self.bot.Click(self.random)
+                time.sleep(0.3)
+                self.walls +=1
         
 
     def RunFEAT(self):

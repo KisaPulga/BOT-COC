@@ -62,10 +62,10 @@ class FarmMDO:
         self.bot.Click(self.buttons["find"])
 
         start_wait = time.time()
-
+        test = self.bot.ScaleXY(224,415)
         while not (self.bot.VerifyPixel(self.bot.ScaleXY(224,415),(198,52,255))):
             time.sleep(1)
-
+            print(pyautogui.pixel(int(test[0]), int(test[1])))
             if time.time() - start_wait > 20:
                 return False  # pas trouvé
 
