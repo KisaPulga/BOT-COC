@@ -3,6 +3,7 @@ import pyautogui
 import os
 import random
 from PIL import Image
+import sys
 
 class FarmMDO:
     def __init__(self, bot):
@@ -28,6 +29,8 @@ class FarmMDO:
         self.y_scroll_start = None
 
         self.heros = False # a modifier si on a un héro
+
+        self.tryFoundAttackMDO = 0
     
     def SetupPositions(self):
         # Boutons
@@ -87,7 +90,9 @@ class FarmMDO:
                 break  # On sort de la boucle
 
             print("     Bloqué en recherche → retour maison")
-
+            self.tryFoundAttackMDO += 1
+            if self.tryFoundAttackMDO >= 15:
+                sys.exit()
             # Bouton retour maison (même position que attack1)
             self.bot.ClickFast(self.buttons["attack"])
             time.sleep(2)  # Laisse le temps de revenir au village
@@ -156,6 +161,7 @@ class FarmMDO:
         while(True):
             print("--------------------------------")
             for i in range(5):
+                self.tryFoundAttackMDO = 0
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")

@@ -1,5 +1,6 @@
 import time
 import random
+import sys
 
 class FarmPRINCIPAL:
     def __init__(self, bot):
@@ -16,6 +17,8 @@ class FarmPRINCIPAL:
         # Nombre de héros manquant, et nombre de troupe d'evenement
         self.heros = 0
         self.troup_event = True
+
+        self.tryFoundAttackPRINCIPAL = 0
 
 
     def SetupPositions(self):
@@ -105,7 +108,9 @@ class FarmPRINCIPAL:
                 break  # On sort de la boucle
 
             print("     Bloqué en recherche → retour maison")
-
+            self.tryFoundAttackPRINCIPAL += 1
+            if self.tryFoundAttackPRINCIPAL >= 15:
+                sys.exit()
             # Bouton retour maison (même position que attack1)
             self.bot.ClickFast(self.buttons["attack1"])
             time.sleep(2)  # Laisse le temps de revenir au village
@@ -181,6 +186,7 @@ class FarmPRINCIPAL:
         print("--------------------------------")
         while(True):
             start_time = time.time()
+            self.tryFoundAttackPRINCIPAL = 0
             print(f"Séquence {compteur} :")
             print("     Début..")
 

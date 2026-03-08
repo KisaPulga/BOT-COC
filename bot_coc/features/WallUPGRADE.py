@@ -98,7 +98,10 @@ class WallUPGRADE:
                 time.sleep(0.3)
                 self.bot.Click(self.random)
                 time.sleep(0.3)
+                print("     Amélioration à l'or !")
                 self.walls +=1
+        else:
+            print("     Pas assez d'or")
 
         if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.20)):
             for i in range(1):
@@ -113,7 +116,10 @@ class WallUPGRADE:
                 time.sleep(0.3)
                 self.bot.Click(self.random)
                 time.sleep(0.3)
+                print("     Amélioration à l'élixir !")
                 self.walls +=1
+        else:
+            print("     Pas assez d'elixir")
         
 
     def RunFEAT(self):
@@ -132,10 +138,9 @@ class WallUPGRADE:
             time.sleep(3)
 
             print("     Vérification ressources..")
-            print(pyautogui.pixel(int(self.pos_ressources["storage_elixir"][0]),int(self.pos_ressources["storage_elixir"][1])))
-            print(self.elixir_color)
             self.UpgradeWall()
-            print(f"Murs amélioré sur cette session : {self.walls} !")
+
+            print(f"    Murs amélioré sur cette session : {self.walls} !")
             end_time = time.time()
             temps = round(end_time - start_time, 2)
             print("     Fin, temps écoulé : " + str(temps) + "s")
