@@ -2,11 +2,8 @@ import time
 import pyautogui
 import os
 import random
-import pytesseract
 from PIL import Image
-
-# Lien vers pytesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+import sys
 
 class FarmMDO:
     def __init__(self, bot):
@@ -32,6 +29,8 @@ class FarmMDO:
         self.y_scroll_start = None
 
         self.heros = False # a modifier si on a un héro
+
+        self.tryFoundAttackMDO = 0
     
     def SetupPositions(self):
         # Boutons
@@ -65,6 +64,16 @@ class FarmMDO:
         self.bot.Click(self.buttons["attack"])
         self.bot.Click(self.buttons["find"])
 
+        start_wait = time.time()
+        test = self.bot.ScaleXY(224,415)
+        while not (self.bot.VerifyPixel(self.bot.ScaleXY(224,415),(198,52,255))):
+            time.sleep(1)
+            print(pyautogui.pixel(int(test[0]), int(test[1])))
+            if time.time() - start_wait > 20:
+                return False  # pas trouvé
+
+        return True  # trouvé
+
     def LeaveAttack(self):
         # Abandonne l'attaque et rentre
         self.bot.Click(self.buttons["surrender"])
@@ -73,12 +82,20 @@ class FarmMDO:
 
 
     def Attack(self):
-        # Attaquer puis trouver un adversaire
-        self.FindAttack()
+        while True:
+            success = self.FindAttack()
 
-        # On attend de trouver un adversaire
-        while not (self.bot.VerifyPixel(self.bot.ScaleXY(224,415),(198,52,255))):
-            time.sleep(2)
+            if success:
+                print("     Adversaire trouvé !")
+                break  # On sort de la boucle
+
+            print("     Bloqué en recherche → retour maison")
+            self.tryFoundAttackMDO += 1
+            if self.tryFoundAttackMDO >= 15:
+                sys.exit()
+            # Bouton retour maison (même position que attack1)
+            self.bot.ClickFast(self.buttons["attack"])
+            time.sleep(2)  # Laisse le temps de revenir au village
 
         # Vérifie s'il y a au moins un héros, demandé au user au début
         base_troups = self.x_troups if self.heros else self.x_troups[:-1]
@@ -144,6 +161,7 @@ class FarmMDO:
         while(True):
             print("--------------------------------")
             for i in range(5):
+                self.tryFoundAttackMDO = 0
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")

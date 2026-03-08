@@ -1,9 +1,6 @@
 import time
-import pyautogui
-import os
 import random
-import pytesseract
-from PIL import Image
+import sys
 
 class FarmPRINCIPAL:
     def __init__(self, bot):
@@ -19,11 +16,9 @@ class FarmPRINCIPAL:
 
         # Nombre de héros manquant, et nombre de troupe d'evenement
         self.heros = 0
-        self.troup_event = False
+        self.troup_event = True
 
-        # Vérificateur
-        # (832,383)  (224.224.224) # Pourcentage principal
-        # (757,384) (174,175,170) # etoile farm
+        self.tryFoundAttackPRINCIPAL = 0
 
 
     def SetupPositions(self):
@@ -73,21 +68,53 @@ class FarmPRINCIPAL:
 
     def FindAttack(self):
         self.bot.Click(self.buttons["attack1"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["find"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["attack2"])
 
+        start_wait = time.time()
+
+        while not self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13)):
+            time.sleep(1)
+
+            if time.time() - start_wait > 20:
+                return False  # pas trouvé
+
+        return True  # trouvé
+
+
     def LeaveAttack(self):
+        start_wait = time.time()
+        while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
+            time.sleep(2)
+            if time.time() - start_wait > 40:
+                break
+
         # Abandonne l'attaque et rentre
         self.bot.Click(self.buttons["surrender"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["surrender_okay"])
+        time.sleep(0.2)
         self.bot.Click(self.buttons["return_home"])
 
-    def Attack(self):
-        self.FindAttack()
 
-        # On attend de trouver un adversaire
-        while not (self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13))):
-            time.sleep(2)
+    def Attack(self):
+        while True:
+            success = self.FindAttack()
+
+            if success:
+                print("     Adversaire trouvé !")
+                break  # On sort de la boucle
+
+            print("     Bloqué en recherche → retour maison")
+            self.tryFoundAttackPRINCIPAL += 1
+            if self.tryFoundAttackPRINCIPAL >= 15:
+                sys.exit()
+            # Bouton retour maison (même position que attack1)
+            self.bot.ClickFast(self.buttons["attack1"])
+            time.sleep(2)  # Laisse le temps de revenir au village
+
 
         units = self.x_troups.copy()
         index = 0
@@ -146,13 +173,7 @@ class FarmPRINCIPAL:
         time.sleep(6)
         for capa_hero in x_heroes:
             self.bot.Click((capa_hero, self.y_troups))
-        
-        start_wait = time.time()
 
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
-            time.sleep(2)
-            if time.time() - start_wait > 40:
-                break
         self.LeaveAttack()
 
 
@@ -165,6 +186,7 @@ class FarmPRINCIPAL:
         print("--------------------------------")
         while(True):
             start_time = time.time()
+            self.tryFoundAttackPRINCIPAL = 0
             print(f"Séquence {compteur} :")
             print("     Début..")
 

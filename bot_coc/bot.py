@@ -7,6 +7,7 @@ import pyautogui
 import random
 from bot_coc.features.FarmMDO import FarmMDO
 from bot_coc.features.FarmPRINCIPAL import FarmPRINCIPAL
+from bot_coc.features.WallUPGRADE import WallUPGRADE
 
 class Bot():
     def __init__(self):
@@ -25,6 +26,7 @@ class Bot():
         # On initialise un objet par feature
         self.farm_mdo = FarmMDO(self)
         self.farm_principal = FarmPRINCIPAL(self)
+        self.wall_upgrade = WallUPGRADE(self, self.farm_principal)
 
     @staticmethod
     def RandomClickTime():
@@ -120,4 +122,7 @@ class Bot():
 
     def FarmPRINCIPAL(self):
         self.farm_principal.RunFEAT()
+
+    def WallUPGRADE(self):
+        self.wall_upgrade.RunFEAT()
         
