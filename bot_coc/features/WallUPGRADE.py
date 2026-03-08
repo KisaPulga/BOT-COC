@@ -91,7 +91,7 @@ class WallUPGRADE:
                 if pos:
                     x, y = pos
                     self.bot.Click((x, y))
-                time.sleep(0.3)
+                time.sleep(1)
                 self.bot.Click(self.buttons["upgrade_gold"])
                 time.sleep(0.3)
                 self.bot.Click(self.buttons["upgrade"])
@@ -109,7 +109,7 @@ class WallUPGRADE:
                 if pos:
                     x, y = pos
                     self.bot.Click((x, y))
-                time.sleep(0.3)
+                time.sleep(1)
                 self.bot.Click(self.buttons["upgrade_elixir"])
                 time.sleep(0.3)
                 self.bot.Click(self.buttons["upgrade"])
