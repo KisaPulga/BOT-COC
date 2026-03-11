@@ -41,8 +41,8 @@ class WallUPGRADE:
     
     def SetupPositions(self):
         self.buttons = {
-            "upgrade_gold" : self.bot.ScaleXY(432, 390),
-            "upgrade_elixir" : self.bot.ScaleXY(502, 390),
+            "upgrade_gold" : self.bot.ScaleXY(467, 390),
+            "upgrade_elixir" : self.bot.ScaleXY(541, 390),
             "upgrade" : self.bot.ScaleXY(610, 420),
         }
         self.pos_ressources = {
