@@ -52,7 +52,7 @@ class WallUPGRADE:
         self.random = self.bot.ScaleXY(822,200)
     
     def FindWall(self):
-        hdv_x, hdv_y = None, None
+        position= None
 
         try:
             image14 = Image.open(self.image_wall14)
@@ -70,15 +70,19 @@ class WallUPGRADE:
             nouvelle_hauteur16 = int(image16.height * self.bot.y_ratio)
             image_resized16 = image16.resize((nouvelle_largeur16, nouvelle_hauteur16))
 
-            hdv_x,hdv_y = pyautogui.locateCenterOnScreen(image_resized14, confidence=0.8)
-            if(hdv_x is None) :
-                hdv_x,hdv_y = pyautogui.locateCenterOnScreen(image_resized15, confidence=0.8)
-            if(hdv_x is None) :
-                hdv_x,hdv_y = pyautogui.locateCenterOnScreen(image_resized16, confidence=0.8)
+            position = pyautogui.locateCenterOnScreen(image_resized14, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
+            if(position is None) :
+                print("pas de mur 14 trouvé")
+                position = pyautogui.locateCenterOnScreen(image_resized15, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
+            if(position is None) :
+                print("pas de mur 15 trouvé")
+                position = pyautogui.locateCenterOnScreen(image_resized16, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
 
-            if(hdv_x != None):
-
-                return hdv_x, hdv_y
+            if(position != None):
+                return position
+            else:
+                print("PAS DE MUR 16 trouvé")
+                return None
         
         except pyautogui.ImageNotFoundException:
             print("Pas trouve")
@@ -86,40 +90,48 @@ class WallUPGRADE:
 
     def UpgradeWall(self):
         if(self.bot.VerifyPixel(self.pos_ressources["storage_gold"], self.gold_color)):
+            print("OR PLEIN")
             for i in range(1):
                 pos = self.FindWall()
                 if pos:
-                    x, y = pos
-                    self.bot.Click((x, y))
-                time.sleep(1)
-                self.bot.Click(self.buttons["upgrade_gold"])
-                time.sleep(0.3)
-                self.bot.Click(self.buttons["upgrade"])
-                time.sleep(0.3)
-                self.bot.Click(self.random)
-                time.sleep(0.3)
-                print("     Amélioration à l'or !")
-                self.walls +=1
+                    self.bot.Click(pos)
+                    print("         CLICK SUR UN MUR AVEC OR")
+                    time.sleep(2)
+                    self.bot.Click(self.buttons["upgrade_gold"])
+                    print("         CLICK BOUTON AMELIORER MUR AVEC OR")
+                    time.sleep(1)
+                    self.bot.Click(self.buttons["upgrade"])
+                    print("         CLICK SUR BOUTON AMELIORER AVEC OR")
+                    time.sleep(1)
+                    self.bot.Click(self.random)
+                    print("         CLICK A COTE POUR ENLEVER LE MENU AVEC OR")
+                    time.sleep(1)
+                    print("     Amélioration à l'or !")
+                    self.walls +=1
         else:
-            print("     Pas assez d'or")
+            print("         Pas assez d'or")
 
         if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.20)):
+            print("ELIXIR PLEIN")
             for i in range(1):
                 pos = self.FindWall()
                 if pos:
-                    x, y = pos
-                    self.bot.Click((x, y))
-                time.sleep(1)
-                self.bot.Click(self.buttons["upgrade_elixir"])
-                time.sleep(0.3)
-                self.bot.Click(self.buttons["upgrade"])
-                time.sleep(0.3)
-                self.bot.Click(self.random)
-                time.sleep(0.3)
-                print("     Amélioration à l'élixir !")
-                self.walls +=1
+                    self.bot.Click(pos)
+                    print("         CLICK SUR UN MUR AVEC ELIXIR")
+                    time.sleep(2)
+                    self.bot.Click(self.buttons["upgrade_elixir"])
+                    print("         CLICK BOUTON AMELIORER MUR AVEC ELIXIR")
+                    time.sleep(1)
+                    self.bot.Click(self.buttons["upgrade"])
+                    print("         CLICK SUR BOUTON AMELIORER AVEC ELIXIR")
+                    time.sleep(1)
+                    self.bot.Click(self.random)
+                    print("         CLICK A COTE POUR ENLEVER LE MENU AVEC ELIXIR")
+                    time.sleep(1)
+                    print("     Amélioration à l'élixir !")
+                    self.walls +=1
         else:
-            print("     Pas assez d'elixir")
+            print("         Pas assez d'elixir")
         
 
     def RunFEAT(self):
@@ -140,7 +152,7 @@ class WallUPGRADE:
             print("     Vérification ressources..")
             self.UpgradeWall()
 
-            print(f"    Murs amélioré sur cette session : {self.walls} !")
+            print(f"     Murs amélioré sur cette session : {self.walls} !")
             end_time = time.time()
             temps = round(end_time - start_time, 2)
             print("     Fin, temps écoulé : " + str(temps) + "s")

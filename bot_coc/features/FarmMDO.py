@@ -40,6 +40,7 @@ class FarmMDO:
             "surrender" : self.bot.ScaleXY(52, 363),
             "surrender_okay" : self.bot.ScaleXY(511, 300),
             "return_home" : self.bot.ScaleXY(432, 409),
+            "cancel" : self.bot.ScaleXY(479, 431),
             "elixir_cart_take" : self.bot.ScaleXY(638, 407),
             "elixir_cart_leave" : self.bot.ScaleXY(725, 49),
             "scroll_start" : self.bot.ScaleXY(700,262), 
@@ -94,7 +95,7 @@ class FarmMDO:
             if self.tryFoundAttackMDO >= 15:
                 sys.exit()
             # Bouton retour maison (même position que attack1)
-            self.bot.ClickFast(self.buttons["attack"])
+            self.bot.ClickFast(self.buttons["cancel"])
             time.sleep(2)  # Laisse le temps de revenir au village
 
         # Vérifie s'il y a au moins un héros, demandé au user au début
