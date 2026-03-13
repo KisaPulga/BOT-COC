@@ -85,7 +85,7 @@ class Bot():
         new_x = self.x_left_user + x_ratio_btn * self.x_width_user
         new_y = self.y_left_user + y_ratio_btn * self.y_height_user
 
-        return new_x,new_y
+        return int(new_x), int(new_y)
     
     def CheckWindow(self):
         if self.x_width_user is None or self.y_height_user is None:

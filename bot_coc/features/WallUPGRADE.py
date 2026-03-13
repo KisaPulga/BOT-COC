@@ -34,7 +34,7 @@ class WallUPGRADE:
         # coordonnées btn
         self.buttons = {}
         self.pos_ressources = {}
-        self.gold_color = (213,195,100)
+        self.gold_color = (240,220,100)
         self.elixir_color = (222,143,222)
         self.walls = 0
         self.random = None
@@ -70,13 +70,11 @@ class WallUPGRADE:
             nouvelle_hauteur16 = int(image16.height * self.bot.y_ratio)
             image_resized16 = image16.resize((nouvelle_largeur16, nouvelle_hauteur16))
 
-            position = pyautogui.locateCenterOnScreen(image_resized14, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
-            if(position is None) :
-                print("pas de mur 14 trouvé")
-                position = pyautogui.locateCenterOnScreen(image_resized15, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
-            if(position is None) :
-                print("pas de mur 15 trouvé")
-                position = pyautogui.locateCenterOnScreen(image_resized16, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
+
+            #position = pyautogui.locateCenterOnScreen(image_resized15, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
+            #if(position is None) :
+                #print("pas de mur 15 trouvé")
+            position = pyautogui.locateCenterOnScreen(image_resized16, confidence=0.8, region=(self.bot.x_left_user, self.bot.y_left_user, self.bot.x_width_user, self.bot.y_height_user))
 
             if(position != None):
                 return position
@@ -89,6 +87,9 @@ class WallUPGRADE:
 
 
     def UpgradeWall(self):
+
+        print("         ",self.pos_ressources["storage_gold"], self.gold_color)
+        print("         ",self.pos_ressources["storage_gold"], pyautogui.pixel(self.pos_ressources["storage_gold"][0], self.pos_ressources["storage_gold"][1]))
         if(self.bot.VerifyPixel(self.pos_ressources["storage_gold"], self.gold_color)):
             print("OR PLEIN")
             for i in range(1):
@@ -111,7 +112,9 @@ class WallUPGRADE:
         else:
             print("         Pas assez d'or")
 
-        if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.20)):
+        print("         ",self.pos_ressources["storage_elixir"], self.elixir_color)
+        print("         ",self.pos_ressources["storage_elixir"], pyautogui.pixel(self.pos_ressources["storage_elixir"][0], self.pos_ressources["storage_elixir"][1]))
+        if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.25)):
             print("ELIXIR PLEIN")
             for i in range(1):
                 pos = self.FindWall()
