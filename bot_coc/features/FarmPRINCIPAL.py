@@ -85,6 +85,7 @@ class FarmPRINCIPAL:
 
 
     def LeaveAttack(self):
+        # attente d'une etoile
         start_wait = time.time()
         while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
             time.sleep(2)
@@ -97,6 +98,14 @@ class FarmPRINCIPAL:
         self.bot.Click(self.buttons["surrender_okay"])
         time.sleep(0.2)
         self.bot.Click(self.buttons["return_home"])
+
+        # attente d'etre a la base
+        start_wait = time.time()
+        while not self.bot.VerifyPixel(self.bot.ScaleXY(75,410),(255,186,63)):
+            time.sleep(3)
+            if time.time() - start_wait > 7:
+                break
+
 
 
     def Attack(self):
@@ -181,7 +190,6 @@ class FarmPRINCIPAL:
         self.SetupPositions()
         compteur = 1
         
-
         time.sleep(2)
         print("--------------------------------")
         while(True):
@@ -199,4 +207,4 @@ class FarmPRINCIPAL:
             print("     Fin, temps écoulé : " + str(temps) + "s")
             compteur += 1
             print("--------------------------------")
-            time.sleep(6)
+            time.sleep(5)

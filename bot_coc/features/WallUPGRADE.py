@@ -92,6 +92,7 @@ class WallUPGRADE:
         print("         ",self.pos_ressources["storage_gold"], pyautogui.pixel(self.pos_ressources["storage_gold"][0], self.pos_ressources["storage_gold"][1]))
         if(self.bot.VerifyPixel(self.pos_ressources["storage_gold"], self.gold_color)):
             print("OR PLEIN")
+            time.sleep(3)
             for i in range(1):
                 pos = self.FindWall()
                 if pos:
@@ -114,8 +115,9 @@ class WallUPGRADE:
 
         print("         ",self.pos_ressources["storage_elixir"], self.elixir_color)
         print("         ",self.pos_ressources["storage_elixir"], pyautogui.pixel(self.pos_ressources["storage_elixir"][0], self.pos_ressources["storage_elixir"][1]))
-        if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.25)):
+        if(self.bot.VerifyPixel(self.pos_ressources["storage_elixir"], self.elixir_color, 0.20)):
             print("ELIXIR PLEIN")
+            time.sleep(3)
             for i in range(1):
                 pos = self.FindWall()
                 if pos:
@@ -135,11 +137,27 @@ class WallUPGRADE:
                     self.walls +=1
         else:
             print("         Pas assez d'elixir")
+
+    def SetupZoom(self):
+        print("1. Zoomez au maximum le village")
+        print("2. Mettez le point du centre du village le plus au milieu possible")  
+        print("3. Recliquez sur la console")
+        print("4. Mettez la souris sur le point central sans cliquer")
+        print("5. Appuyez sur entrer")
+
+        input("Appuie sur Entrée pour continuer...")
+
+        for i in range (17):
+            pyautogui.scroll(-500)
         
+        time.sleep(2)
+    
 
     def RunFEAT(self):
         self.SetupPositions()
         self.farm_principal.SetupPositions()
+
+        #self.SetupZoom()
 
         compteur = 1
         print("--------------------------------")
@@ -149,8 +167,6 @@ class WallUPGRADE:
             print("     Début..")
 
             self.farm_principal.Attack()
-
-            time.sleep(3)
 
             print("     Vérification ressources..")
             self.UpgradeWall()
