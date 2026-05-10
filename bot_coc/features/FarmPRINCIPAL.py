@@ -15,7 +15,7 @@ class FarmPRINCIPAL:
         self.spawn_spell_positions_2 = []
 
         # Nombre de héros manquant, et nombre de troupe d'evenement
-        self.heros = 1
+        self.heros = 0
         self.troup_event = False
 
         self.tryFoundAttackPRINCIPAL = 0
