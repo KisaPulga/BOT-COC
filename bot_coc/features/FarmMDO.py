@@ -35,20 +35,20 @@ class FarmMDO:
     def SetupPositions(self):
         # Boutons
         self.buttons = {
-            "attack" : self.bot.ScaleXY(50, 437),
-            "find" : self.bot.ScaleXY(642, 322),
-            "surrender" : self.bot.ScaleXY(52, 363),
-            "surrender_okay" : self.bot.ScaleXY(511, 300),
-            "return_home" : self.bot.ScaleXY(432, 409),
-            "cancel" : self.bot.ScaleXY(479, 431),
-            "elixir_cart_take" : self.bot.ScaleXY(638, 407),
-            "elixir_cart_leave" : self.bot.ScaleXY(725, 49),
-            "scroll_start" : self.bot.ScaleXY(700,262), 
-            "scroll_end" : self.bot.ScaleXY(700,462)
+            "attack" : self.bot.ScaleXY(67, 542), # OK
+            "find" : self.bot.ScaleXY(753, 415), # OK
+            "surrender" : self.bot.ScaleXY(75, 437),# OK
+            "surrender_okay" : self.bot.ScaleXY(617, 408),# OK
+            "return_home" : self.bot.ScaleXY(510, 523),# OK
+            "cancel" : self.bot.ScaleXY(509, 537),
+            "elixir_cart_take" : self.bot.ScaleXY(750, 520),# OK
+            "elixir_cart_leave" : self.bot.ScaleXY(852, 97),# OK
+            "scroll_start" : self.bot.ScaleXY(721,184), # OK
+            "scroll_end" : self.bot.ScaleXY(721,384)# OK
         }
     
-        x_troups_init = [147, 213, 268, 326, 382, 439, 495]
-        self.y_troups = self.bot.ScaleXY(0,444)[1]
+        x_troups_init = [102, 193, 275, 357, 435, 514, 597]# OK
+        self.y_troups = self.bot.ScaleXY(0,553)[1]# OK
         self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
         troups_spawn_init = [

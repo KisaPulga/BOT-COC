@@ -13,8 +13,8 @@ class Bot():
     def __init__(self):
 
         # Longueurs initiales
-        self.x_width_init = 865
-        self.y_height_init = 484
+        self.x_width_init = 1017
+        self.y_height_init = 574
 
         # Valeurs de l'utilisateurs
         self.x_width_user = None
