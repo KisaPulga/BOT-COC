@@ -49,6 +49,7 @@ class WallUPGRADE:
             "storage_gold" : self.bot.ScaleXY(721,20),
             "storage_elixir" : self.bot.ScaleXY(721,57),
         }
+        # click a coté pour enlever de l'interface ressources
         self.random = self.bot.ScaleXY(822,200)
     
     def FindWall(self):

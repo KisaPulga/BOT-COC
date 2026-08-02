@@ -75,6 +75,7 @@ class FarmPRINCIPAL:
 
         start_wait = time.time()
 
+        # verification du bouton rouge
         while not self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13)):
             time.sleep(1)
 
