@@ -20,21 +20,27 @@ class FarmPRINCIPAL:
 
         self.tryFoundAttackPRINCIPAL = 0
 
+        self.red_surrender_color = (211,13,13)
+        self.grey_star_color = (174,175,170)
+        self.orange_attack_color = (231,154,59)
+
 
     def SetupPositions(self):
         # Boutons
         self.buttons = {
-            "attack1" : self.bot.ScaleXY(50, 437),
-            "find" : self.bot.ScaleXY(121, 336),
-            "attack2" : self.bot.ScaleXY(735, 414),
-            "surrender" : self.bot.ScaleXY(51, 382),
-            "surrender_okay" : self.bot.ScaleXY(513, 301),
-            "return_home" : self.bot.ScaleXY(434, 415),
+            "attack1" : self.bot.ScaleXY(48,474), # OK
+            "find" : self.bot.ScaleXY(121,378),# OK
+            "attack2" : self.bot.ScaleXY(732,451), # OK
+            "surrender" : self.bot.ScaleXY(54,420), # OK
+            "surrender_okay" : self.bot.ScaleXY(510,335), # OK
+            "return_home" : self.bot.ScaleXY(432,454), # OK
+            "one_star" : self.bot.ScaleXY(864,470), # OK
+            "verif_attack" : self.bot.ScaleXY(104,523)# OK
         }
 
         # enlever 2 valeur a self.x_troups si pas de troupe d'event
-        x_troups_init = [155, 209, 270, 325, 377, 431, 494, 547]
-        self.y_troups = self.bot.ScaleXY(0,444)[1]
+        x_troups_init = [155, 209, 270, 325, 377, 431, 494, 547] # OK
+        self.y_troups = self.bot.ScaleXY(0,486)[1] # OK
         self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
         troups_spawn_init_1 = [
@@ -76,7 +82,7 @@ class FarmPRINCIPAL:
         start_wait = time.time()
 
         # verification du bouton rouge
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13)):
+        while not self.bot.VerifyPixel(self.buttons["surrender"],self.red_surrender_color):
             time.sleep(1)
 
             if time.time() - start_wait > 20:
@@ -88,7 +94,7 @@ class FarmPRINCIPAL:
     def LeaveAttack(self):
         # attente d'une etoile
         start_wait = time.time()
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
+        while not self.bot.VerifyPixel(self.buttons["one_star"],self.grey_star_color):
             time.sleep(2)
             if time.time() - start_wait > 40:
                 break
@@ -102,7 +108,7 @@ class FarmPRINCIPAL:
 
         # attente d'etre a la base
         start_wait = time.time()
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(75,410),(255,186,63)):
+        while not self.bot.VerifyPixel(self.buttons["verif_attack"],self.orange_attack_color):
             time.sleep(3)
             if time.time() - start_wait > 7:
                 break
