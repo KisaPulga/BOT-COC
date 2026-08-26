@@ -24,6 +24,7 @@ class FarmPRINCIPAL:
         self.red_verif_attack_color = (208,13,14)
         self.grey_star_color = (174,175,170)
         self.orange_verif_home_color = (229,151,57)
+        self.positions_ready = False
 
 
     def SetupPositions(self):
@@ -75,11 +76,12 @@ class FarmPRINCIPAL:
 
 
     def FindAttack(self):
-        self.bot.Click(self.buttons["attack1"])
-        time.sleep(0.2)
-        self.bot.Click(self.buttons["find"])
-        time.sleep(0.2)
-        self.bot.Click(self.buttons["attack2"])
+        actions = [
+            (self.bot.Click, (self.buttons["attack1"],)),
+            (self.bot.Click, (self.buttons["find"],)),
+            (self.bot.Click, (self.buttons["attack2"],)),
+        ]
+        self.ExecuteActions(actions)
 
         start_wait = time.time()
 
@@ -91,6 +93,11 @@ class FarmPRINCIPAL:
                 return False  # pas trouvé
 
         return True  # trouvé
+
+    @staticmethod
+    def ExecuteActions(actions):
+        for action, args in actions:
+            action(*args)
 
 
     def LeaveAttack(self):
@@ -165,27 +172,31 @@ class FarmPRINCIPAL:
             spawn_troups_positions = self.spawn_troups_positions_2
             spawn_spell_positions = self.spawn_spell_positions_2
 
+        actions = []
+
         # Spawn electro drag
-        self.bot.ClickFast((x_trp_edrag, self.y_troups))
+        actions.append((self.bot.ClickFast, ((x_trp_edrag, self.y_troups),)))
         for spawn_edrag in spawn_troups_positions :
-                self.bot.ClickFast(spawn_edrag)
+            actions.append((self.bot.ClickFast, (spawn_edrag,)))
 
         # Spawn troupe evenement
         if(x_trp_event):
-            self.bot.ClickFast((x_trp_event, self.y_troups))
+            actions.append((self.bot.ClickFast, ((x_trp_event, self.y_troups),)))
             for spawn_event in spawn_troups_positions :
-                self.bot.ClickFast(spawn_event)
+                actions.append((self.bot.ClickFast, (spawn_event,)))
 
         # Spawn héros - on met un héro 1 position sur 2
         for i, x_hero in enumerate(x_heroes):
             i *= 2
-            self.bot.ClickFast((x_hero, self.y_troups))
-            self.bot.ClickFast((spawn_troups_positions[i]))
+            actions.append((self.bot.ClickFast, ((x_hero, self.y_troups),)))
+            actions.append((self.bot.ClickFast, (spawn_troups_positions[i],)))
 
         # Spawn spell
-        self.bot.ClickFast((x_spell, self.y_troups))
+        actions.append((self.bot.ClickFast, ((x_spell, self.y_troups),)))
         for spawn_spell in spawn_spell_positions:
-            self.bot.ClickFast((spawn_spell))
+            actions.append((self.bot.ClickFast, (spawn_spell,)))
+
+        self.ExecuteActions(actions)
 
         # Activer capacité héros
         time.sleep(6)
@@ -195,27 +206,26 @@ class FarmPRINCIPAL:
         self.LeaveAttack()
 
 
+    def RunCycle(self):
+        self.bot.ActivateWindow()
+        if not self.positions_ready:
+            self.SetupPositions()
+            self.positions_ready = True
+
+        start_time = time.time()
+        self.tryFoundAttackPRINCIPAL = 0
+        self.Attack()
+        end_time = time.time()
+        temps = round(end_time - start_time, 2)
+        print("     Fin, temps écoulé : " + str(temps) + "s")
+
     def RunFEAT(self):
-        win = gw.getWindowsWithTitle("MuMu")[0]
-        self.SetupPositions()
         compteur = 1
-        win.activate()
-        
-        time.sleep(2)
         print("--------------------------------")
         while(True):
-            start_time = time.time()
-            self.tryFoundAttackPRINCIPAL = 0
             print(f"Séquence {compteur} :")
             print("     Début..")
-
-
-            self.Attack()
-
-
-            end_time = time.time()
-            temps = round(end_time - start_time, 2)
-            print("     Fin, temps écoulé : " + str(temps) + "s")
+            self.RunCycle()
             compteur += 1
             print("--------------------------------")
             time.sleep(5)

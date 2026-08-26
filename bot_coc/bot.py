@@ -5,6 +5,7 @@
 import time
 import pyautogui
 import random
+import pygetwindow as gw
 from bot_coc.features.FarmMDO import FarmMDO
 from bot_coc.features.FarmPRINCIPAL import FarmPRINCIPAL
 from bot_coc.features.WallUPGRADE import WallUPGRADE
@@ -21,6 +22,7 @@ class Bot():
         self.y_height_user = None
         self.x_left_user = None
         self.y_left_user = None
+        self.window = None
 
 
         # On initialise un objet par feature
@@ -59,6 +61,15 @@ class Bot():
         self.x_width_user = x_right_user - self.x_left_user
         self.y_height_user = y_right_user - self.y_left_user
 
+        center_x = int(self.x_left_user + self.x_width_user / 2)
+        center_y = int(self.y_left_user + self.y_height_user / 2)
+        windows = gw.getWindowsAt(center_x, center_y)
+        if windows:
+            self.window = windows[0]
+            callbackView(f"Fenêtre associée : {self.window.title}")
+        else:
+            callbackView("Fenêtre introuvable dans cette zone.")
+
         callbackView("")
         callbackView("Paramétrage terminé, vous pouvez maintenant utiliser le bot !")
 
@@ -90,8 +101,18 @@ class Bot():
     def CheckWindow(self):
         if self.x_width_user is None or self.y_height_user is None:
             return False, "Avant d'utiliser le bot, vous devez le paramétrer."
+        elif self.window is None:
+            return False, "Aucune fenêtre n'est associée à ce bot."
         else:
             return True, "Ok"
+
+    def ActivateWindow(self):
+        if self.window is None:
+            raise RuntimeError("Aucune fenêtre n'est associée à ce bot.")
+        if self.window.isMinimized:
+            self.window.restore()
+        self.window.activate()
+        time.sleep(0.3)
         
     def FindMiddle(self):
         pyautogui.moveTo((self.x_left_user + (self.x_width_user / 2)), (self.y_left_user + (self.y_height_user / 2)),  self.RandomClickTime(), pyautogui.easeInOutQuad)
@@ -122,6 +143,9 @@ class Bot():
 
     def FarmPRINCIPAL(self):
         self.farm_principal.RunFEAT()
+
+    def FarmPRINCIPALCycle(self):
+        self.farm_principal.RunCycle()
 
     def WallUPGRADE(self):
         self.wall_upgrade.RunFEAT()
