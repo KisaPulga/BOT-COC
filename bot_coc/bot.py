@@ -14,7 +14,7 @@ class Bot():
 
         # Longueurs initiales
         self.x_width_init = 1017
-        self.y_height_init = 574
+        self.y_height_init = 612 - 38
 
         # Valeurs de l'utilisateurs
         self.x_width_user = None

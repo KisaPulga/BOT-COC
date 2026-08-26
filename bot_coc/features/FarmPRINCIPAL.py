@@ -46,28 +46,28 @@ class FarmPRINCIPAL:
         self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
         troups_spawn_init_1 = [
-            (150,172),(185,143),(232,109),(289,72),(332,35),(358,18),(297,41),(234,88),(160,145),(211,141),(249,75),(151,190),(155,151),(254,100),(116,208),(343,15),(299,45)
+            (135,294),(176,245),(235,209),(295,154),(352,120),(462,60),(336,129),(414,92),(223,232),(288,172),(281,170),(338,133),(406,81),(440,64),(166,269),(387,106),(309,151)
         ]
         self.spawn_troups_positions_1  = [
             self.bot.ScaleXY(x, y - 38) for x, y in troups_spawn_init_1 
         ]
 
         troups_spell_init_1  = [
-            (221,194),(328,132),(418,72),(315,229),(444,132),(417,231)
+            (284,303),(392,214),(481,148),(396,329),(495,228)
         ]
         self.spawn_spell_positions_1 = [
             self.bot.ScaleXY(x, y - 38) for x, y in troups_spell_init_1  
         ]
 
         troups_spawn_init_2 = [
-            (493,18),(530,44),(558,64),(584,81),(615,101),(640,119),(663,136),(687,155),(720,174),(748,197),(702,161),(647,118),(609,91),(573,60),(534,43),(582,80),(665,137)
+            (546,55),(586,86 ),(643,122),(683,149),(724,182),(763,211),(788,229),(816,253),(838,269),(692,159),(651,125),(599,83),(746,201),(698,161),(660,128),(805,236),(575,66)
         ]
         self.spawn_troups_positions_2  = [
             self.bot.ScaleXY(x, y - 38) for x, y in troups_spawn_init_2 
         ]
 
         troups_spell_init_2  = [
-            (472,106),(554,160),(633,219),(427,157),(518,233),(434,216)
+            (509,109),(612,200),(713,277),(494,190),(640,295)
         ]
         self.spawn_spell_positions_2 = [
             self.bot.ScaleXY(x, y - 38) for x, y in troups_spell_init_2  
@@ -156,8 +156,8 @@ class FarmPRINCIPAL:
         x_spell = units[index]
 
         # choix coté attaque
-        side = random.choice([1, 2])
-
+        #side = random.choice([1, 2])
+        side=2
         if side == 1:
             spawn_troups_positions = self.spawn_troups_positions_1
             spawn_spell_positions = self.spawn_spell_positions_1

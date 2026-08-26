@@ -41,16 +41,16 @@ class WallUPGRADE:
     
     def SetupPositions(self):
         self.buttons = {
-            "upgrade_gold" : self.bot.ScaleXY(565,486), # ok
-            "upgrade_elixir" : self.bot.ScaleXY(674,486), # ok
-            "upgrade" : self.bot.ScaleXY(710,538), # ok
+            "upgrade_gold" : self.bot.ScaleXY(565,486 - 38), # ok
+            "upgrade_elixir" : self.bot.ScaleXY(674,486 - 38), # ok
+            "upgrade" : self.bot.ScaleXY(710,538 - 38), # ok
         }
         self.pos_ressources = {
-            "storage_gold" : self.bot.ScaleXY(812,69), # ok
-            "storage_elixir" : self.bot.ScaleXY(812,122), # ok
+            "storage_gold" : self.bot.ScaleXY(812,69 - 38), # ok
+            "storage_elixir" : self.bot.ScaleXY(812,122 - 38), # ok
         }
         # click a coté pour enlever de l'interface ressources
-        self.random = self.bot.ScaleXY(956,278) # ok
+        self.random = self.bot.ScaleXY(956,278 - 38) # ok
     
     def FindWall(self):
         position= None
