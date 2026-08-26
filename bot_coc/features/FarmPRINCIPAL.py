@@ -1,6 +1,7 @@
 import time
 import random
 import sys
+import pygetwindow as gw
 
 class FarmPRINCIPAL:
     def __init__(self, bot):
@@ -20,49 +21,56 @@ class FarmPRINCIPAL:
 
         self.tryFoundAttackPRINCIPAL = 0
 
+        self.red_verif_attack_color = (208,13,14)
+        self.grey_star_color = (174,175,170)
+        self.orange_verif_home_color = (229,151,57)
+
 
     def SetupPositions(self):
         # Boutons
         self.buttons = {
-            "attack1" : self.bot.ScaleXY(50, 437),
-            "find" : self.bot.ScaleXY(121, 336),
-            "attack2" : self.bot.ScaleXY(735, 414),
-            "surrender" : self.bot.ScaleXY(51, 382),
-            "surrender_okay" : self.bot.ScaleXY(513, 301),
-            "return_home" : self.bot.ScaleXY(434, 415),
+            "attack1" : self.bot.ScaleXY(67,541 - 38), # OK
+            "find" : self.bot.ScaleXY(175,461 - 38), # OK
+            "attack2" : self.bot.ScaleXY(904,549 - 38),  # OK
+            "surrender" : self.bot.ScaleXY(75,467 - 38), # OK
+            "verif_attack" : self.bot.ScaleXY(105,480 - 38), # OK
+            "surrender_okay" : self.bot.ScaleXY(624,409 - 38), # OK
+            "return_home" : self.bot.ScaleXY(510,530 - 38),  # OK
+            "one_star" : self.bot.ScaleXY(864,470 - 38),  # OK
+            "verif_home" : self.bot.ScaleXY(106,524 - 38) # OK
         }
 
         # enlever 2 valeur a self.x_troups si pas de troupe d'event
-        x_troups_init = [155, 209, 270, 325, 377, 431, 494, 547]
-        self.y_troups = self.bot.ScaleXY(0,444)[1]
+        x_troups_init = [113, 190, 273, 351, 430, 507, 586, 663]  # OK
+        self.y_troups = self.bot.ScaleXY(0,562 - 38)[1]  # OK
         self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
         troups_spawn_init_1 = [
-            (150,172),(185,143),(232,109),(289,72),(332,35),(358,18),(297,41),(234,88),(160,145),(211,141),(249,75),(151,190),(155,151),(254,100),(116,208),(343,15),(299,45)
+            (135,294),(176,245),(235,209),(295,154),(352,120),(462,60),(336,129),(414,92),(223,232),(288,172),(281,170),(338,133),(406,81),(440,64),(166,269),(387,106),(309,151)
         ]
         self.spawn_troups_positions_1  = [
-            self.bot.ScaleXY(x, y) for x, y in troups_spawn_init_1 
+            self.bot.ScaleXY(x, y - 38) for x, y in troups_spawn_init_1 
         ]
 
         troups_spell_init_1  = [
-            (221,194),(328,132),(418,72),(315,229),(444,132),(417,231)
+            (284,303),(392,214),(481,148),(396,329),(495,228)
         ]
         self.spawn_spell_positions_1 = [
-            self.bot.ScaleXY(x, y) for x, y in troups_spell_init_1  
+            self.bot.ScaleXY(x, y - 38) for x, y in troups_spell_init_1  
         ]
 
         troups_spawn_init_2 = [
-            (493,18),(530,44),(558,64),(584,81),(615,101),(640,119),(663,136),(687,155),(720,174),(748,197),(702,161),(647,118),(609,91),(573,60),(534,43),(582,80),(665,137)
+            (546,55),(586,86 ),(643,122),(683,149),(724,182),(763,211),(788,229),(816,253),(838,269),(692,159),(651,125),(599,83),(746,201),(698,161),(660,128),(805,236),(575,66)
         ]
         self.spawn_troups_positions_2  = [
-            self.bot.ScaleXY(x, y) for x, y in troups_spawn_init_2 
+            self.bot.ScaleXY(x, y - 38) for x, y in troups_spawn_init_2 
         ]
 
         troups_spell_init_2  = [
-            (472,106),(554,160),(633,219),(427,157),(518,233),(434,216)
+            (509,109),(612,200),(713,277),(494,190),(640,295)
         ]
         self.spawn_spell_positions_2 = [
-            self.bot.ScaleXY(x, y) for x, y in troups_spell_init_2  
+            self.bot.ScaleXY(x, y - 38) for x, y in troups_spell_init_2  
         ]
 
 
@@ -75,7 +83,8 @@ class FarmPRINCIPAL:
 
         start_wait = time.time()
 
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13)):
+        # verification du bouton rouge
+        while not self.bot.VerifyPixel(self.buttons["verif_attack"],self.red_verif_attack_color):
             time.sleep(1)
 
             if time.time() - start_wait > 20:
@@ -87,7 +96,7 @@ class FarmPRINCIPAL:
     def LeaveAttack(self):
         # attente d'une etoile
         start_wait = time.time()
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(757,384),(174,175,170)):
+        while not self.bot.VerifyPixel(self.buttons["one_star"],self.grey_star_color):
             time.sleep(2)
             if time.time() - start_wait > 40:
                 break
@@ -101,7 +110,7 @@ class FarmPRINCIPAL:
 
         # attente d'etre a la base
         start_wait = time.time()
-        while not self.bot.VerifyPixel(self.bot.ScaleXY(75,410),(255,186,63)):
+        while not self.bot.VerifyPixel(self.buttons["verif_home"],self.orange_verif_home_color):
             time.sleep(3)
             if time.time() - start_wait > 7:
                 break
@@ -147,8 +156,8 @@ class FarmPRINCIPAL:
         x_spell = units[index]
 
         # choix coté attaque
-        side = random.choice([1, 2])
-
+        #side = random.choice([1, 2])
+        side=2
         if side == 1:
             spawn_troups_positions = self.spawn_troups_positions_1
             spawn_spell_positions = self.spawn_spell_positions_1
@@ -187,8 +196,10 @@ class FarmPRINCIPAL:
 
 
     def RunFEAT(self):
+        win = gw.getWindowsWithTitle("MuMu")[0]
         self.SetupPositions()
         compteur = 1
+        win.activate()
         
         time.sleep(2)
         print("--------------------------------")

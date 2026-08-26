@@ -4,6 +4,7 @@ import os
 import random
 from PIL import Image
 import sys
+import pygetwindow as gw
 
 class FarmMDO:
     def __init__(self, bot):
@@ -31,31 +32,34 @@ class FarmMDO:
         self.heros = False # a modifier si on a un héro
 
         self.tryFoundAttackMDO = 0
+
+        self.purple_color = (198,55,254)
     
     def SetupPositions(self):
         # Boutons
         self.buttons = {
-            "attack" : self.bot.ScaleXY(50, 437),
-            "find" : self.bot.ScaleXY(642, 322),
-            "surrender" : self.bot.ScaleXY(52, 363),
-            "surrender_okay" : self.bot.ScaleXY(511, 300),
-            "return_home" : self.bot.ScaleXY(432, 409),
-            "cancel" : self.bot.ScaleXY(479, 431),
-            "elixir_cart_take" : self.bot.ScaleXY(638, 407),
-            "elixir_cart_leave" : self.bot.ScaleXY(725, 49),
-            "scroll_start" : self.bot.ScaleXY(700,262), 
-            "scroll_end" : self.bot.ScaleXY(700,462)
+            "attack" : self.bot.ScaleXY(67, 542 - 38), # OK
+            "find" : self.bot.ScaleXY(753, 415 - 38), # OK
+            "surrender" : self.bot.ScaleXY(75, 437 - 38),# OK
+            "surrender_okay" : self.bot.ScaleXY(617, 408 - 38),# OK
+            "return_home" : self.bot.ScaleXY(510, 523 - 38),# OK
+            "cancel" : self.bot.ScaleXY(509, 537 - 38),
+            "elixir_cart_take" : self.bot.ScaleXY(750, 520 - 38),# OK
+            "elixir_cart_leave" : self.bot.ScaleXY(852, 97 - 38),# OK
+            "scroll_start" : self.bot.ScaleXY(721,184 - 38), # OK
+            "scroll_end" : self.bot.ScaleXY(721,584 - 38),# OK
+            "purple_troup" : self.bot.ScaleXY(213,513 - 38) # OK
         }
     
-        x_troups_init = [147, 213, 268, 326, 382, 439, 495]
-        self.y_troups = self.bot.ScaleXY(0,444)[1]
+        x_troups_init = [102, 193, 275, 357, 435, 514, 597]# OK
+        self.y_troups = self.bot.ScaleXY(0,553 - 38)[1]# OK
         self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
 
         troups_spawn_init = [
-            (728,85),(778,322),(817,165),(737,345),
-            (834,200),(796,276),(666,368),(83,288),
-            (140,102),(43,251),(30,188),(175,357),
-            (253,19),(595,385)
+            (114,238 - 38),(150,349 - 38),(677,315 - 38),(146,215 - 38),# OK
+            (128,298 - 38),(62,284 - 38),(74,284 - 38),(690,283 - 38), # OK
+            (639,364 - 38),(242,74 - 38),(157,136 - 38),(113,311 - 38), # OK
+            (695,349 - 38),(668,136 - 38) # OK
         ]
         self.spawn_positions = [
             self.bot.ScaleXY(x, y) for x, y in troups_spawn_init 
@@ -66,13 +70,12 @@ class FarmMDO:
         self.bot.Click(self.buttons["find"])
 
         start_wait = time.time()
-        test = self.bot.ScaleXY(224,415)
-        while not (self.bot.VerifyPixel(self.bot.ScaleXY(224,415),(198,52,255))):
+
+        while not self.bot.VerifyPixel(self.buttons["purple_troup"], self.purple_color):
             time.sleep(1)
-            print(pyautogui.pixel(int(test[0]), int(test[1])))
+            print(pyautogui.pixel(int(self.buttons["purple_troup"][0]), int(self.buttons["purple_troup"][1])))
             if time.time() - start_wait > 20:
                 return False  # pas trouvé
-
         return True  # trouvé
 
     def LeaveAttack(self):
@@ -152,10 +155,10 @@ class FarmMDO:
 
 
     def RunFEAT(self):
-
+        win = gw.getWindowsWithTitle("MuMu")[0]
         self.SetupPositions()
 
-
+        win.activate()
         time.sleep(2)
         compteur = 1
 
@@ -166,7 +169,7 @@ class FarmMDO:
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")
-
+                
                 self.Attack()
 
                 # Patiente un peu
@@ -179,6 +182,7 @@ class FarmMDO:
                 compteur += 1
                 time.sleep(1)
             print("--------------------------------")
-
+            
             self.Scroll()
+            time.sleep(2)
             self.FindElixir()
