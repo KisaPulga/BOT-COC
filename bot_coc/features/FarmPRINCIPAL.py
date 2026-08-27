@@ -75,7 +75,7 @@ class FarmPRINCIPAL:
         ]
 
 
-    def FindAttack(self):
+    def StartAttackSearch(self):
         actions = [
             (self.bot.Click, (self.buttons["attack1"],)),
             (self.bot.Click, (self.buttons["find"],)),
@@ -83,16 +83,24 @@ class FarmPRINCIPAL:
         ]
         self.ExecuteActions(actions)
 
+    def WaitForAttack(self, timeout=20):
         start_wait = time.time()
 
         # verification du bouton rouge
         while not self.bot.VerifyPixel(self.buttons["verif_attack"],self.red_verif_attack_color):
             time.sleep(1)
 
-            if time.time() - start_wait > 20:
+            if time.time() - start_wait > timeout:
                 return False  # pas trouvé
 
         return True  # trouvé
+
+    def FindAttack(self):
+        self.StartAttackSearch()
+        return self.WaitForAttack()
+
+    def CancelAttackSearch(self):
+        self.bot.ClickFast(self.buttons["attack1"])
 
     @staticmethod
     def ExecuteActions(actions):
@@ -124,23 +132,7 @@ class FarmPRINCIPAL:
 
 
 
-    def Attack(self):
-        while True:
-            success = self.FindAttack()
-
-            if success:
-                print("     Adversaire trouvé !")
-                break  # On sort de la boucle
-
-            print("     Bloqué en recherche → retour maison")
-            self.tryFoundAttackPRINCIPAL += 1
-            if self.tryFoundAttackPRINCIPAL >= 15:
-                sys.exit()
-            # Bouton retour maison (même position que attack1)
-            self.bot.ClickFast(self.buttons["attack1"])
-            time.sleep(2)  # Laisse le temps de revenir au village
-
-
+    def DeployTroops(self):
         units = self.x_troups.copy()
         index = 0
 
@@ -198,11 +190,29 @@ class FarmPRINCIPAL:
 
         self.ExecuteActions(actions)
 
-        # Activer capacité héros
-        time.sleep(6)
+    def ActivateHeroes(self):
+        units = self.x_troups.copy()
+        index = 1 + (1 if self.troup_event else 0)
+        nbr_heros = 4 - self.heros
+        x_heroes = units[index:index + nbr_heros]
         for capa_hero in x_heroes:
             self.bot.Click((capa_hero, self.y_troups))
 
+    def Attack(self):
+        while True:
+            if self.FindAttack():
+                print("     Adversaire trouvé !")
+                break
+            print("     Bloqué en recherche → retour maison")
+            self.tryFoundAttackPRINCIPAL += 1
+            if self.tryFoundAttackPRINCIPAL >= 15:
+                sys.exit()
+            self.CancelAttackSearch()
+            time.sleep(2)
+
+        self.DeployTroops()
+        time.sleep(6)
+        self.ActivateHeroes()
         self.LeaveAttack()
 
 

@@ -53,7 +53,7 @@ class FarmMDO:
     
         x_troups_init = [102, 193, 275, 357, 435, 514, 597]# OK
         self.y_troups = self.bot.ScaleXY(0,553 - 38)[1]# OK
-        self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
+        self.x_troups = [self.bot.ScaleXY(x, 553 - 38)[0] for x in x_troups_init]
 
         troups_spawn_init = [
             (114,238 - 38),(150,349 - 38),(677,315 - 38),(146,215 - 38),# OK

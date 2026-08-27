@@ -3,6 +3,7 @@
 ########################
 
 from bot_coc.bot import Bot
+import time
 
 class Controller:
     def __init__(self, view):
@@ -53,9 +54,41 @@ class Controller:
         compteur = 1
         while True:
             self.view.ShowText(f"\n===== Séquence {compteur} =====")
-            for index, bot in enumerate(self.bots):
-                self.view.ShowText(f"Instance {index + 1}/{len(self.bots)}")
-                bot.FarmPRINCIPALCycle()
+            features = [bot.farm_principal for bot in self.bots]
+
+            self.view.ShowText("Étape 1/5 : lancement des attaques")
+            for feature in features:
+                feature.bot.ActivateWindow()
+                feature.SetupPositions()
+                feature.StartAttackSearch()
+
+            self.view.ShowText("Étape 2/5 : vérification du pixel rouge")
+            found_features = []
+            for index, feature in enumerate(features):
+                feature.bot.ActivateWindow()
+                if feature.WaitForAttack():
+                    self.view.ShowText(f"Instance {index + 1} : attaque trouvée")
+                    found_features.append(feature)
+                else:
+                    self.view.ShowText(f"Instance {index + 1} : attaque non trouvée")
+                    feature.CancelAttackSearch()
+
+            self.view.ShowText("Étape 3/5 : déploiement des troupes")
+            for feature in found_features:
+                feature.bot.ActivateWindow()
+                feature.DeployTroops()
+
+            time.sleep(6)
+            self.view.ShowText("Étape 4/5 : activation des héros")
+            for feature in found_features:
+                feature.bot.ActivateWindow()
+                feature.ActivateHeroes()
+
+            self.view.ShowText("Étape 5/5 : retour au village")
+            for feature in found_features:
+                feature.bot.ActivateWindow()
+                feature.LeaveAttack()
+
             compteur += 1
             
     def RunProg(self):
