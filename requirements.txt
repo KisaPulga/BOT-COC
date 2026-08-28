@@ -1,1 +1,4 @@
-pip install pyautogui pillow pytesseract pygetwindow
+pyautogui
+pillow
+pytesseract
+pygetwindow

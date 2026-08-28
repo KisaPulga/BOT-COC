@@ -25,6 +25,7 @@ class View:
         print(r"║                     [8] Paramètre fenêtre                            ║")
         print(r"║                     [9] Quitter                                      ║")
         print(r"╚══════════════════════════════════════════════════════════════════════╝")
+        print("Pendant le Farm classique, appuyez sur Q pour revenir à ce menu.")
 
     def ShowText(self, message):
         print(message)

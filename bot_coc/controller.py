@@ -3,6 +3,7 @@
 ########################
 
 from bot_coc.bot import Bot
+import ctypes
 import json
 from pathlib import Path
 import time
@@ -12,6 +13,7 @@ class Controller:
         self.view = view
         self.bots = []
         self.coordinates_file = Path(__file__).resolve().parent.parent / "coordinates.json"
+        self.pause_key_was_down = False
 
     def AskBotCount(self):
         while True:
@@ -85,6 +87,24 @@ class Controller:
     def CallView(self, message):
         self.view.ShowText(message)
 
+    def PauseRequested(self):
+        key_is_down = bool(ctypes.windll.user32.GetAsyncKeyState(ord("Q")) & 0x8000)
+        if key_is_down and not self.pause_key_was_down:
+            self.pause_key_was_down = True
+            self.view.ShowText("Pause demandée : retour au menu...")
+            return True
+        if not key_is_down:
+            self.pause_key_was_down = False
+        return False
+
+    def WaitWithPauseCheck(self, duration):
+        end_time = time.time() + duration
+        while time.time() < end_time:
+            if self.PauseRequested():
+                return True
+            time.sleep(0.2)
+        return False
+
     def CallCheckWindow(self):
         all_valid = True
         for index, bot in enumerate(self.bots):
@@ -96,12 +116,18 @@ class Controller:
 
     def RunFarmPrincipal(self):
         compteur = 1
+        self.view.ShowText("Appuyez sur Q à tout moment pour mettre le farm en pause et revenir au menu.")
+        for bot in self.bots:
+            bot.farm_principal.pause_callback = self.PauseRequested
+
         while True:
             self.view.ShowText(f"\n===== Séquence {compteur} =====")
             features = [bot.farm_principal for bot in self.bots]
 
             self.view.ShowText("Étape 1/5 : lancement des attaques")
             for feature in features:
+                if self.PauseRequested():
+                    return
                 feature.bot.ActivateWindow()
                 feature.SetupPositions()
                 feature.StartAttackSearch()
@@ -116,20 +142,29 @@ class Controller:
                 else:
                     self.view.ShowText(f"Instance {index + 1} : attaque non trouvée")
                     feature.CancelAttackSearch()
+                if feature.pause_requested:
+                    return
 
             self.view.ShowText("Étape 3/5 : déploiement des troupes")
             for feature in found_features:
+                if self.PauseRequested():
+                    return
                 feature.bot.ActivateWindow()
                 feature.DeployTroops()
 
-            time.sleep(6)
+            if self.WaitWithPauseCheck(6):
+                return
             self.view.ShowText("Étape 4/5 : activation des héros")
             for feature in found_features:
+                if self.PauseRequested():
+                    return
                 feature.bot.ActivateWindow()
                 feature.ActivateHeroes()
 
             self.view.ShowText("Étape 5/5 : retour au village")
             for feature in found_features:
+                if self.PauseRequested():
+                    return
                 feature.bot.ActivateWindow()
                 feature.LeaveAttack()
 
@@ -146,6 +181,8 @@ class Controller:
                 case 1:
                     if(self.CallCheckWindow()):
                         if len(self.bots) == 1:
+                            self.bots[0].farm_mdo.pause_callback = self.PauseRequested
+                            self.view.ShowText("Appuyez sur Q pour mettre le Farm MDO en pause et revenir au menu.")
                             self.bots[0].FarmMDO()
                         else:
                             self.view.ShowText("Farm MDO multi-instance non disponible pour le moment.")

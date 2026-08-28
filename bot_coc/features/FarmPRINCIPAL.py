@@ -25,6 +25,8 @@ class FarmPRINCIPAL:
         self.grey_star_color = (174,175,170)
         self.orange_verif_home_color = (229,151,57)
         self.positions_ready = False
+        self.pause_callback = None
+        self.pause_requested = False
 
 
     def SetupPositions(self):
@@ -88,6 +90,9 @@ class FarmPRINCIPAL:
 
         # verification du bouton rouge
         while not self.bot.VerifyPixel(self.buttons["verif_attack"],self.red_verif_attack_color):
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return False
             time.sleep(1)
 
             if time.time() - start_wait > timeout:
@@ -218,6 +223,7 @@ class FarmPRINCIPAL:
 
     def RunCycle(self):
         self.bot.ActivateWindow()
+        self.pause_requested = False
         if not self.positions_ready:
             self.SetupPositions()
             self.positions_ready = True
