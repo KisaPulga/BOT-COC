@@ -31,6 +31,8 @@ class FarmMDO:
         self.heros = False # a modifier si on a un héro
 
         self.tryFoundAttackMDO = 0
+        self.pause_callback = None
+        self.pause_requested = False
     
     def SetupPositions(self):
         # Boutons
@@ -68,6 +70,9 @@ class FarmMDO:
         start_wait = time.time()
         test = self.bot.ScaleXY(224,415)
         while not (self.bot.VerifyPixel(self.bot.ScaleXY(224,415),(198,52,255))):
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return False
             time.sleep(1)
             print(pyautogui.pixel(int(test[0]), int(test[1])))
             if time.time() - start_wait > 20:
@@ -85,6 +90,9 @@ class FarmMDO:
     def Attack(self):
         while True:
             success = self.FindAttack()
+
+            if self.pause_requested:
+                return
 
             if success:
                 print("     Adversaire trouvé !")
@@ -105,6 +113,9 @@ class FarmMDO:
 
         # On boucle sur le nombre de troupe pour les placer
         for troup_x in put_troups:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
             spawn = random.choice(self.spawn_positions)
             self.bot.Click((troup_x,self.y_troups))
             self.bot.Click(spawn)
@@ -112,10 +123,14 @@ class FarmMDO:
         #Active les capacités des troupes
         ability_troups = self.x_troups if self.heros else self.x_troups[:-1]
         for troup_x in ability_troups:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
             self.bot.Click((troup_x, self.y_troups))
 
         # Patiente un peu
-        time.sleep(random.uniform(2, 4))
+        if self.WaitWithPauseCheck(random.uniform(2, 4)):
+            return
         self.LeaveAttack()
 
 
@@ -158,19 +173,26 @@ class FarmMDO:
 
         time.sleep(2)
         compteur = 1
+        self.pause_requested = False
 
         while(True):
             print("--------------------------------")
             for i in range(5):
+                if self.pause_callback and self.pause_callback():
+                    self.pause_requested = True
+                    return
                 self.tryFoundAttackMDO = 0
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
                 print("     Début..")
 
                 self.Attack()
+                if self.pause_requested:
+                    return
 
                 # Patiente un peu
-                time.sleep(random.uniform(3, 4))
+                if self.WaitWithPauseCheck(random.uniform(3, 4)):
+                    return
 
                 # Calcule le temps et l'affiche
                 end_time = time.time()
@@ -180,5 +202,16 @@ class FarmMDO:
                 time.sleep(1)
             print("--------------------------------")
 
+            if self.WaitWithPauseCheck(2):
+                return
             self.Scroll()
             self.FindElixir()
+
+    def WaitWithPauseCheck(self, duration):
+        end_time = time.time() + duration
+        while time.time() < end_time:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return True
+            time.sleep(0.2)
+        return False

@@ -19,6 +19,8 @@ class FarmPRINCIPAL:
         self.troup_event = False
 
         self.tryFoundAttackPRINCIPAL = 0
+        self.pause_callback = None
+        self.pause_requested = False
 
 
     def SetupPositions(self):
@@ -76,6 +78,9 @@ class FarmPRINCIPAL:
         start_wait = time.time()
 
         while not self.bot.VerifyPixel(self.bot.ScaleXY(64,390),(211,13,13)):
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return False
             time.sleep(1)
 
             if time.time() - start_wait > 20:
@@ -111,6 +116,9 @@ class FarmPRINCIPAL:
     def Attack(self):
         while True:
             success = self.FindAttack()
+
+            if self.pause_requested:
+                return
 
             if success:
                 print("     Adversaire trouvé !")
@@ -157,30 +165,49 @@ class FarmPRINCIPAL:
             spawn_spell_positions = self.spawn_spell_positions_2
 
         # Spawn electro drag
+        if self.pause_callback and self.pause_callback():
+            self.pause_requested = True
+            return
         self.bot.ClickFast((x_trp_edrag, self.y_troups))
         for spawn_edrag in spawn_troups_positions :
+                if self.pause_callback and self.pause_callback():
+                    self.pause_requested = True
+                    return
                 self.bot.ClickFast(spawn_edrag)
 
         # Spawn troupe evenement
         if(x_trp_event):
             self.bot.ClickFast((x_trp_event, self.y_troups))
             for spawn_event in spawn_troups_positions :
+                if self.pause_callback and self.pause_callback():
+                    self.pause_requested = True
+                    return
                 self.bot.ClickFast(spawn_event)
 
         # Spawn héros - on met un héro 1 position sur 2
         for i, x_hero in enumerate(x_heroes):
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
             i *= 2
             self.bot.ClickFast((x_hero, self.y_troups))
             self.bot.ClickFast((spawn_troups_positions[i]))
 
         # Spawn spell
+        if self.pause_callback and self.pause_callback():
+            self.pause_requested = True
+            return
         self.bot.ClickFast((x_spell, self.y_troups))
         for spawn_spell in spawn_spell_positions:
             self.bot.ClickFast((spawn_spell))
 
         # Activer capacité héros
-        time.sleep(6)
+        if self.WaitWithPauseCheck(6):
+            return
         for capa_hero in x_heroes:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
             self.bot.Click((capa_hero, self.y_troups))
 
         self.LeaveAttack()
@@ -189,6 +216,7 @@ class FarmPRINCIPAL:
     def RunFEAT(self):
         self.SetupPositions()
         compteur = 1
+        self.pause_requested = False
         
         time.sleep(2)
         print("--------------------------------")
@@ -198,8 +226,11 @@ class FarmPRINCIPAL:
             print(f"Séquence {compteur} :")
             print("     Début..")
 
+            self.Attack()
 
             self.Attack()
+            if self.pause_requested:
+                return
 
 
             end_time = time.time()
@@ -207,4 +238,14 @@ class FarmPRINCIPAL:
             print("     Fin, temps écoulé : " + str(temps) + "s")
             compteur += 1
             print("--------------------------------")
-            time.sleep(5)
+            if self.WaitWithPauseCheck(5):
+                return
+
+    def WaitWithPauseCheck(self, duration):
+        end_time = time.time() + duration
+        while time.time() < end_time:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return True
+            time.sleep(0.2)
+        return False

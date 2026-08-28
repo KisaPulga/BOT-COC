@@ -45,22 +45,34 @@ class Bot():
         return self.y_height_user / self.y_height_init
 
     def DefineUserCoordinates(self, callbackView):
-        
         callbackView("Place la souris en haut à gauche puis appuie sur ENTER")
         input()
-        self.x_left_user, self.y_left_user = pyautogui.position()
-        callbackView(f"Top Left : {self.x_left_user}, {self.y_left_user}")
+        x_left_user, y_left_user = pyautogui.position()
+        callbackView(f"Top Left : {x_left_user}, {y_left_user}")
 
         callbackView("Place la souris en bas à droite puis appuie sur ENTER")
         input()
         x_right_user, y_right_user = pyautogui.position()
         callbackView(f"Bottom Right : {x_right_user}, {y_right_user}")
 
-        self.x_width_user = x_right_user - self.x_left_user
-        self.y_height_user = y_right_user - self.y_left_user
+        coordinates = {
+            "x_left": x_left_user,
+            "y_left": y_left_user,
+            "x_right": x_right_user,
+            "y_right": y_right_user,
+        }
+        self.SetUserCoordinates(coordinates, callbackView)
+        return coordinates
+
+    def SetUserCoordinates(self, coordinates, callbackView):
+        self.x_left_user = coordinates["x_left"]
+        self.y_left_user = coordinates["y_left"]
+        self.x_width_user = coordinates["x_right"] - self.x_left_user
+        self.y_height_user = coordinates["y_right"] - self.y_left_user
 
         callbackView("")
         callbackView("Paramétrage terminé, vous pouvez maintenant utiliser le bot !")
+        return coordinates
 
         # self.x_left_user = -1172
         # self.y_left_user = 79

@@ -168,6 +168,9 @@ class WallUPGRADE:
 
             self.farm_principal.Attack()
 
+            if self.farm_principal.pause_requested:
+                return
+
             print("     Vérification ressources..")
             self.UpgradeWall()
 
