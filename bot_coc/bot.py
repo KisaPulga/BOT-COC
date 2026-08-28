@@ -5,6 +5,8 @@
 import time
 import pyautogui
 import random
+import pygetwindow as gw
+import ctypes
 from bot_coc.features.FarmMDO import FarmMDO
 from bot_coc.features.FarmPRINCIPAL import FarmPRINCIPAL
 from bot_coc.features.WallUPGRADE import WallUPGRADE
@@ -21,6 +23,8 @@ class Bot():
         self.y_height_user = None
         self.x_left_user = None
         self.y_left_user = None
+        self.window = None
+        self.window_title = None
 
 
         # On initialise un objet par feature
@@ -45,22 +49,44 @@ class Bot():
         return self.y_height_user / self.y_height_init
 
     def DefineUserCoordinates(self, callbackView):
-        
         callbackView("Place la souris en haut à gauche puis appuie sur ENTER")
         input()
-        self.x_left_user, self.y_left_user = pyautogui.position()
-        callbackView(f"Top Left : {self.x_left_user}, {self.y_left_user}")
+        x_left_user, y_left_user = pyautogui.position()
+        callbackView(f"Top Left : {x_left_user}, {y_left_user}")
 
         callbackView("Place la souris en bas à droite puis appuie sur ENTER")
         input()
         x_right_user, y_right_user = pyautogui.position()
         callbackView(f"Bottom Right : {x_right_user}, {y_right_user}")
 
-        self.x_width_user = x_right_user - self.x_left_user
-        self.y_height_user = y_right_user - self.y_left_user
+        coordinates = {
+            "x_left": x_left_user,
+            "y_left": y_left_user,
+            "x_right": x_right_user,
+            "y_right": y_right_user,
+        }
+        self.SetUserCoordinates(coordinates, callbackView)
+        return coordinates
+
+    def SetUserCoordinates(self, coordinates, callbackView):
+        self.x_left_user = coordinates["x_left"]
+        self.y_left_user = coordinates["y_left"]
+        self.x_width_user = coordinates["x_right"] - self.x_left_user
+        self.y_height_user = coordinates["y_right"] - self.y_left_user
+
+        center_x = int(self.x_left_user + self.x_width_user / 2)
+        center_y = int(self.y_left_user + self.y_height_user / 2)
+        windows = gw.getWindowsAt(center_x, center_y)
+        if windows:
+            self.window = windows[0]
+            self.window_title = self.window.title
+            callbackView(f"Fenêtre associée : {self.window.title}")
+        else:
+            callbackView("Fenêtre introuvable dans cette zone.")
 
         callbackView("")
         callbackView("Paramétrage terminé, vous pouvez maintenant utiliser le bot !")
+        return coordinates
 
         # self.x_left_user = -1172
         # self.y_left_user = 79
@@ -90,8 +116,47 @@ class Bot():
     def CheckWindow(self):
         if self.x_width_user is None or self.y_height_user is None:
             return False, "Avant d'utiliser le bot, vous devez le paramétrer."
+        elif self.window is None:
+            return False, "Aucune fenêtre n'est associée à ce bot."
         else:
             return True, "Ok"
+
+    def ActivateWindow(self):
+        if self.window is None:
+            raise RuntimeError("Aucune fenêtre n'est associée à ce bot.")
+
+        if not ctypes.windll.user32.IsWindow(self.window._hWnd):
+            center_x = int(self.x_left_user + self.x_width_user / 2)
+            center_y = int(self.y_left_user + self.y_height_user / 2)
+            windows = gw.getWindowsAt(center_x, center_y)
+            matching_windows = [
+                window for window in windows
+                if window.title == self.window_title
+            ]
+            if not matching_windows:
+                raise RuntimeError(
+                    f"La fenêtre associée '{self.window_title}' est introuvable."
+                )
+            self.window = matching_windows[0]
+
+        try:
+            if self.window.isMinimized:
+                self.window.restore()
+            self.window.activate()
+        except Exception:
+            center_x = int(self.x_left_user + self.x_width_user / 2)
+            center_y = int(self.y_left_user + self.y_height_user / 2)
+            windows = [
+                window for window in gw.getWindowsAt(center_x, center_y)
+                if window.title == self.window_title
+            ]
+            if not windows:
+                raise RuntimeError(
+                    f"Impossible de réactiver la fenêtre '{self.window_title}'."
+                )
+            self.window = windows[0]
+            self.window.activate()
+        time.sleep(0.3)
         
     def FindMiddle(self):
         pyautogui.moveTo((self.x_left_user + (self.x_width_user / 2)), (self.y_left_user + (self.y_height_user / 2)),  self.RandomClickTime(), pyautogui.easeInOutQuad)
@@ -122,6 +187,9 @@ class Bot():
 
     def FarmPRINCIPAL(self):
         self.farm_principal.RunFEAT()
+
+    def FarmPRINCIPALCycle(self):
+        self.farm_principal.RunCycle()
 
     def WallUPGRADE(self):
         self.wall_upgrade.RunFEAT()

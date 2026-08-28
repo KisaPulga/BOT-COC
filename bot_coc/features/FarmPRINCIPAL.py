@@ -24,6 +24,9 @@ class FarmPRINCIPAL:
         self.red_verif_attack_color = (208,13,14)
         self.grey_star_color = (174,175,170)
         self.orange_verif_home_color = (229,151,57)
+        self.positions_ready = False
+        self.pause_callback = None
+        self.pause_requested = False
 
 
     def SetupPositions(self):
@@ -74,23 +77,40 @@ class FarmPRINCIPAL:
         ]
 
 
-    def FindAttack(self):
-        self.bot.Click(self.buttons["attack1"])
-        time.sleep(0.2)
-        self.bot.Click(self.buttons["find"])
-        time.sleep(0.2)
-        self.bot.Click(self.buttons["attack2"])
+    def StartAttackSearch(self):
+        actions = [
+            (self.bot.Click, (self.buttons["attack1"],)),
+            (self.bot.Click, (self.buttons["find"],)),
+            (self.bot.Click, (self.buttons["attack2"],)),
+        ]
+        self.ExecuteActions(actions)
 
+    def WaitForAttack(self, timeout=20):
         start_wait = time.time()
 
         # verification du bouton rouge
         while not self.bot.VerifyPixel(self.buttons["verif_attack"],self.red_verif_attack_color):
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return False
             time.sleep(1)
 
-            if time.time() - start_wait > 20:
+            if time.time() - start_wait > timeout:
                 return False  # pas trouvé
 
         return True  # trouvé
+
+    def FindAttack(self):
+        self.StartAttackSearch()
+        return self.WaitForAttack()
+
+    def CancelAttackSearch(self):
+        self.bot.ClickFast(self.buttons["attack1"])
+
+    @staticmethod
+    def ExecuteActions(actions):
+        for action, args in actions:
+            action(*args)
 
 
     def LeaveAttack(self):
@@ -117,23 +137,7 @@ class FarmPRINCIPAL:
 
 
 
-    def Attack(self):
-        while True:
-            success = self.FindAttack()
-
-            if success:
-                print("     Adversaire trouvé !")
-                break  # On sort de la boucle
-
-            print("     Bloqué en recherche → retour maison")
-            self.tryFoundAttackPRINCIPAL += 1
-            if self.tryFoundAttackPRINCIPAL >= 15:
-                sys.exit()
-            # Bouton retour maison (même position que attack1)
-            self.bot.ClickFast(self.buttons["attack1"])
-            time.sleep(2)  # Laisse le temps de revenir au village
-
-
+    def DeployTroops(self):
         units = self.x_troups.copy()
         index = 0
 
@@ -156,8 +160,8 @@ class FarmPRINCIPAL:
         x_spell = units[index]
 
         # choix coté attaque
-        #side = random.choice([1, 2])
-        side=2
+        side = random.choice([1, 2])
+
         if side == 1:
             spawn_troups_positions = self.spawn_troups_positions_1
             spawn_spell_positions = self.spawn_spell_positions_1
@@ -165,57 +169,79 @@ class FarmPRINCIPAL:
             spawn_troups_positions = self.spawn_troups_positions_2
             spawn_spell_positions = self.spawn_spell_positions_2
 
+        actions = []
+
         # Spawn electro drag
-        self.bot.ClickFast((x_trp_edrag, self.y_troups))
+        actions.append((self.bot.ClickFast, ((x_trp_edrag, self.y_troups),)))
         for spawn_edrag in spawn_troups_positions :
-                self.bot.ClickFast(spawn_edrag)
+            actions.append((self.bot.ClickFast, (spawn_edrag,)))
 
         # Spawn troupe evenement
         if(x_trp_event):
-            self.bot.ClickFast((x_trp_event, self.y_troups))
+            actions.append((self.bot.ClickFast, ((x_trp_event, self.y_troups),)))
             for spawn_event in spawn_troups_positions :
-                self.bot.ClickFast(spawn_event)
+                actions.append((self.bot.ClickFast, (spawn_event,)))
 
         # Spawn héros - on met un héro 1 position sur 2
         for i, x_hero in enumerate(x_heroes):
             i *= 2
-            self.bot.ClickFast((x_hero, self.y_troups))
-            self.bot.ClickFast((spawn_troups_positions[i]))
+            actions.append((self.bot.ClickFast, ((x_hero, self.y_troups),)))
+            actions.append((self.bot.ClickFast, (spawn_troups_positions[i],)))
 
         # Spawn spell
-        self.bot.ClickFast((x_spell, self.y_troups))
+        actions.append((self.bot.ClickFast, ((x_spell, self.y_troups),)))
         for spawn_spell in spawn_spell_positions:
-            self.bot.ClickFast((spawn_spell))
+            actions.append((self.bot.ClickFast, (spawn_spell,)))
 
-        # Activer capacité héros
-        time.sleep(6)
+        self.ExecuteActions(actions)
+
+    def ActivateHeroes(self):
+        units = self.x_troups.copy()
+        index = 1 + (1 if self.troup_event else 0)
+        nbr_heros = 4 - self.heros
+        x_heroes = units[index:index + nbr_heros]
         for capa_hero in x_heroes:
             self.bot.Click((capa_hero, self.y_troups))
 
+    def Attack(self):
+        while True:
+            if self.FindAttack():
+                print("     Adversaire trouvé !")
+                break
+            print("     Bloqué en recherche → retour maison")
+            self.tryFoundAttackPRINCIPAL += 1
+            if self.tryFoundAttackPRINCIPAL >= 15:
+                sys.exit()
+            self.CancelAttackSearch()
+            time.sleep(2)
+
+        self.DeployTroops()
+        time.sleep(6)
+        self.ActivateHeroes()
         self.LeaveAttack()
 
 
+    def RunCycle(self):
+        self.bot.ActivateWindow()
+        self.pause_requested = False
+        if not self.positions_ready:
+            self.SetupPositions()
+            self.positions_ready = True
+
+        start_time = time.time()
+        self.tryFoundAttackPRINCIPAL = 0
+        self.Attack()
+        end_time = time.time()
+        temps = round(end_time - start_time, 2)
+        print("     Fin, temps écoulé : " + str(temps) + "s")
+
     def RunFEAT(self):
-        win = gw.getWindowsWithTitle("MuMu")[0]
-        self.SetupPositions()
         compteur = 1
-        win.activate()
-        
-        time.sleep(2)
         print("--------------------------------")
         while(True):
-            start_time = time.time()
-            self.tryFoundAttackPRINCIPAL = 0
             print(f"Séquence {compteur} :")
             print("     Début..")
-
-
-            self.Attack()
-
-
-            end_time = time.time()
-            temps = round(end_time - start_time, 2)
-            print("     Fin, temps écoulé : " + str(temps) + "s")
+            self.RunCycle()
             compteur += 1
             print("--------------------------------")
             time.sleep(5)

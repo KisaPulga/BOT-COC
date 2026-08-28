@@ -34,6 +34,8 @@ class FarmMDO:
         self.tryFoundAttackMDO = 0
 
         self.purple_color = (198,55,254)
+        self.pause_callback = None
+        self.pause_requested = False
     
     def SetupPositions(self):
         # Boutons
@@ -53,7 +55,7 @@ class FarmMDO:
     
         x_troups_init = [102, 193, 275, 357, 435, 514, 597]# OK
         self.y_troups = self.bot.ScaleXY(0,553 - 38)[1]# OK
-        self.x_troups = [self.bot.ScaleXY(x, self.y_troups)[0] for x in x_troups_init]
+        self.x_troups = [self.bot.ScaleXY(x, 553 - 38)[0] for x in x_troups_init]
 
         troups_spawn_init = [
             (114,238 - 38),(150,349 - 38),(677,315 - 38),(146,215 - 38),# OK
@@ -72,6 +74,9 @@ class FarmMDO:
         start_wait = time.time()
 
         while not self.bot.VerifyPixel(self.buttons["purple_troup"], self.purple_color):
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return False
             time.sleep(1)
             print(pyautogui.pixel(int(self.buttons["purple_troup"][0]), int(self.buttons["purple_troup"][1])))
             if time.time() - start_wait > 20:
@@ -88,6 +93,9 @@ class FarmMDO:
     def Attack(self):
         while True:
             success = self.FindAttack()
+
+            if self.pause_requested:
+                return
 
             if success:
                 print("     Adversaire trouvé !")
@@ -108,6 +116,9 @@ class FarmMDO:
 
         # On boucle sur le nombre de troupe pour les placer
         for troup_x in put_troups:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
             spawn = random.choice(self.spawn_positions)
             self.bot.Click((troup_x,self.y_troups))
             self.bot.Click(spawn)
@@ -115,10 +126,18 @@ class FarmMDO:
         #Active les capacités des troupes
         ability_troups = self.x_troups if self.heros else self.x_troups[:-1]
         for troup_x in ability_troups:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
             self.bot.Click((troup_x, self.y_troups))
 
         # Patiente un peu
-        time.sleep(random.uniform(2, 4))
+        end_time = time.time() + random.uniform(2, 4)
+        while time.time() < end_time:
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
+            time.sleep(0.2)
         self.LeaveAttack()
 
 
@@ -161,10 +180,14 @@ class FarmMDO:
         win.activate()
         time.sleep(2)
         compteur = 1
+        self.pause_requested = False
 
         while(True):
             print("--------------------------------")
             for i in range(5):
+                if self.pause_callback and self.pause_callback():
+                    self.pause_requested = True
+                    return
                 self.tryFoundAttackMDO = 0
                 start_time = time.time()
                 print(f"Séquence {compteur} :")
@@ -172,8 +195,16 @@ class FarmMDO:
                 
                 self.Attack()
 
+                if self.pause_requested:
+                    return
+
                 # Patiente un peu
-                time.sleep(random.uniform(3, 4))
+                end_time = time.time() + random.uniform(3, 4)
+                while time.time() < end_time:
+                    if self.pause_callback and self.pause_callback():
+                        self.pause_requested = True
+                        return
+                    time.sleep(0.2)
 
                 # Calcule le temps et l'affiche
                 end_time = time.time()
@@ -183,6 +214,9 @@ class FarmMDO:
                 time.sleep(1)
             print("--------------------------------")
             
+            if self.pause_callback and self.pause_callback():
+                self.pause_requested = True
+                return
             self.Scroll()
             time.sleep(2)
             self.FindElixir()
