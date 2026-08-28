@@ -3,12 +3,15 @@
 ########################
 
 from bot_coc.bot import Bot
+import json
+from pathlib import Path
 import time
 
 class Controller:
     def __init__(self, view):
         self.view = view
         self.bots = []
+        self.coordinates_file = Path(__file__).resolve().parent.parent / "coordinates.json"
 
     def AskBotCount(self):
         while True:
@@ -20,15 +23,56 @@ class Controller:
             except ValueError:
                 print("Entrée invalide ! Veuillez saisir un chiffre.")
 
+    def AskCoordinatesChoice(self):
+        while True:
+            choice = input("Utiliser les coordonnées précédemment enregistrées ? (o/n) ").strip().lower()
+            if choice in ("o", "oui", "y", "yes"):
+                return True
+            if choice in ("n", "non", "no"):
+                return False
+            print("Entrée invalide ! Répondez par oui ou non.")
+
+    def LoadCoordinates(self):
+        if not self.coordinates_file.exists():
+            return []
+
+        try:
+            with self.coordinates_file.open("r", encoding="utf-8") as file:
+                coordinates = json.load(file)
+        except (OSError, json.JSONDecodeError):
+            self.view.ShowText("Impossible de lire coordinates.json. De nouvelles coordonnées seront demandées.")
+            return []
+
+        required_keys = {"x_left", "y_left", "x_right", "y_right"}
+        if not isinstance(coordinates, list):
+            return []
+        return [
+            item for item in coordinates
+            if isinstance(item, dict) and required_keys.issubset(item)
+        ]
+
+    def SaveCoordinates(self, coordinates):
+        with self.coordinates_file.open("w", encoding="utf-8") as file:
+            json.dump(coordinates, file, indent=4)
+
     def ConfigureBots(self):
         count = self.AskBotCount()
+        saved_coordinates = self.LoadCoordinates()
+        use_saved = bool(saved_coordinates) and self.AskCoordinatesChoice()
         self.bots = []
+        configured_coordinates = []
 
         for index in range(count):
             self.view.ShowText(f"\nParamétrage de l'instance {index + 1}/{count}")
             bot = Bot()
-            bot.DefineUserCoordinates(self.CallView)
+            if use_saved and index < len(saved_coordinates):
+                coordinates = bot.SetUserCoordinates(saved_coordinates[index], self.CallView)
+            else:
+                coordinates = bot.DefineUserCoordinates(self.CallView)
             self.bots.append(bot)
+            configured_coordinates.append(coordinates)
+
+        self.SaveCoordinates(configured_coordinates)
         
     def AskChoice(self):
         while True:
