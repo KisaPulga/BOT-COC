@@ -190,13 +190,6 @@ class Controller:
                     if(self.CallCheckWindow()):
                         self.RunFarmPrincipal()
 
-                case 3:
-                    if(self.CallCheckWindow()):
-                        if len(self.bots) == 1:
-                            self.bots[0].WallUPGRADE()
-                        else:
-                            self.view.ShowText("Wall Upgrade multi-instance non disponible pour le moment.")
-
                 case 7:
                     if(self.CallCheckWindow()):
                         for bot in self.bots:
