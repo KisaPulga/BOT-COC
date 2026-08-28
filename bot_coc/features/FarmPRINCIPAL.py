@@ -155,8 +155,8 @@ class FarmPRINCIPAL:
         x_spell = units[index]
 
         # choix coté attaque
-        #side = random.choice([1, 2])
-        side=2
+        side = random.choice([1, 2])
+
         if side == 1:
             spawn_troups_positions = self.spawn_troups_positions_1
             spawn_spell_positions = self.spawn_spell_positions_1

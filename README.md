@@ -28,7 +28,7 @@ Je vais commencer par les features les plus simples comme le farm de ressources 
 
 Voici la liste des features à ce jour : </br>
 ✅ Farm MDO </br>
-❌ Farm Village principal </br>
+✅ Farm Village principal </br>
 ❌ Amélioration murs automatique </br>
 ❌ Attaques de raids </br>
 ❌ Auto demande de troupes </br>
