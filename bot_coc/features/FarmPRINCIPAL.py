@@ -101,7 +101,7 @@ class FarmPRINCIPAL:
         self.bot.Click(self.buttons["surrender"])
         time.sleep(0.2)
         self.bot.Click(self.buttons["surrender_okay"])
-        time.sleep(0.2)
+        time.sleep(0.9)
         self.bot.Click(self.buttons["return_home"])
 
         # attente d'etre a la base
@@ -227,14 +227,13 @@ class FarmPRINCIPAL:
             print("     Début..")
 
             self.Attack()
-
-            self.Attack()
             if self.pause_requested:
                 return
 
 
             end_time = time.time()
             temps = round(end_time - start_time, 2)
+            
             print("     Fin, temps écoulé : " + str(temps) + "s")
             compteur += 1
             print("--------------------------------")
